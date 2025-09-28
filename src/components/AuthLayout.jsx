@@ -41,20 +41,20 @@ const AuthLayout = ({
   ];
 
   return (
-    <div className="h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center p-4 overflow-hidden">
-      <div className="max-w-6xl w-full h-[90vh] bg-white rounded-3xl shadow-2xl overflow-hidden relative">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center p-2 sm:p-4 overflow-hidden">
+      <div className="max-w-6xl w-full min-h-screen sm:min-h-0 sm:h-[90vh] bg-white sm:rounded-3xl shadow-2xl overflow-hidden relative">
         
         {/* Background Pattern */}
         <div className="absolute inset-0 bg-gradient-to-r from-blue-600/5 via-purple-600/5 to-pink-600/5"></div>
         
-        <div className="relative flex h-full">
+        <div className="relative flex flex-col lg:flex-row h-full">
           
           {/* Image Panel */}
           <div className={`
-            relative w-1/2 h-full bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-800 
-            flex flex-col items-center justify-center p-8 lg:p-12 text-white overflow-hidden
-            transition-all duration-1000 ease-in-out transform
-            ${isSignup ? 'order-2' : 'order-1'}
+            relative w-full lg:w-1/2 h-64 sm:h-80 lg:h-full bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-800 
+            flex flex-col items-center justify-center p-4 sm:p-6 lg:p-12 text-white overflow-hidden
+            transition-all duration-1000 ease-in-out transform flex-shrink-0
+            ${isSignup ? 'lg:order-2' : 'lg:order-1'}
           `}>
             
             {/* Animated Background Elements */}
@@ -67,20 +67,20 @@ const AuthLayout = ({
             <div className="relative z-10 text-center">
               
               {/* Logo */}
-              <div className="mb-6 lg:mb-8">
-                <div className="inline-flex items-center justify-center w-16 h-16 lg:w-20 lg:h-20 bg-white/20 rounded-2xl backdrop-blur-sm mb-4">
-                  <ShoppingBag className="h-8 w-8 lg:h-10 lg:w-10 text-white" />
+              <div className="mb-3 sm:mb-4 lg:mb-8">
+                <div className="inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20 bg-white/20 rounded-2xl backdrop-blur-sm mb-2 sm:mb-4">
+                  <ShoppingBag className="h-6 w-6 sm:h-8 sm:w-8 lg:h-10 lg:w-10 text-white" />
                 </div>
-                <h1 className="text-2xl lg:text-3xl font-bold mb-2">Athukorala Traders</h1>
-                <p className="text-blue-100 text-sm lg:text-base">Sri Lanka's Premier Hardware Store</p>
+                <h1 className="text-lg sm:text-2xl lg:text-3xl font-bold mb-1 sm:mb-2">Athukorala Traders</h1>
+                <p className="text-blue-100 text-xs sm:text-sm lg:text-base">Sri Lanka's Premier Hardware Store</p>
               </div>
 
-              {/* Welcome Message */}
-              <div className="mb-6 lg:mb-8">
-                <h2 className="text-xl lg:text-2xl font-semibold mb-3 lg:mb-4">
+              {/* Welcome Message - Hidden on mobile to save space */}
+              <div className="hidden sm:block mb-4 lg:mb-8">
+                <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold mb-2 lg:mb-4">
                   {isSignup ? 'Join Our Community!' : 'Welcome Back!'}
                 </h2>
-                <p className="text-blue-100 leading-relaxed max-w-sm mx-auto text-sm lg:text-base">
+                <p className="text-blue-100 leading-relaxed max-w-sm mx-auto text-xs sm:text-sm lg:text-base">
                   {isSignup 
                     ? 'Discover premium quality tools and hardware supplies for all your construction and renovation needs.'
                     : 'Continue your journey with us and explore our extensive collection of quality hardware products.'
@@ -89,43 +89,47 @@ const AuthLayout = ({
               </div>
 
               {/* Features Grid */}
-              <div className="grid grid-cols-1 gap-3 lg:gap-4">
-                {features.slice(0, isSignup ? 6 : 4).map((feature, index) => (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-2 sm:gap-3 lg:gap-4">
+                {features.slice(0, isSignup ? (window.innerWidth < 640 ? 4 : 6) : (window.innerWidth < 640 ? 2 : 4)).map((feature, index) => (
                   <div 
                     key={index}
-                    className="flex items-center gap-3 p-2 lg:p-3 bg-white/10 rounded-lg backdrop-blur-sm transform transition-all duration-300 hover:scale-105"
+                    className="flex items-center gap-2 sm:gap-3 p-2 lg:p-3 bg-white/10 rounded-lg backdrop-blur-sm transform transition-all duration-300 hover:scale-105"
                     style={{ 
                       animationDelay: `${index * 100}ms`,
                       animation: 'slideInUp 0.6s ease-out forwards'
                     }}
                   >
-                    <div className="text-blue-200">
-                      {feature.icon}
+                    <div className="text-blue-200 flex-shrink-0">
+                      <div className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6">
+                        {React.cloneElement(feature.icon, { className: "w-full h-full" })}
+                      </div>
                     </div>
-                    <span className="text-xs lg:text-sm font-medium">{feature.text}</span>
+                    <span className="text-xs sm:text-xs lg:text-sm font-medium">{feature.text}</span>
                   </div>
                 ))}
               </div>
 
-              {/* Decorative Elements */}
-              <div className="mt-6 lg:mt-8 flex justify-center space-x-2">
-                {[...Array(5)].map((_, i) => (
-                  <Star 
-                    key={i} 
-                    className="h-4 w-4 lg:h-5 lg:w-5 text-yellow-300 fill-current animate-pulse" 
-                    style={{ animationDelay: `${i * 200}ms` }} 
-                  />
-                ))}
+              {/* Decorative Elements - Hidden on small mobile */}
+              <div className="hidden sm:block">
+                <div className="mt-3 sm:mt-6 lg:mt-8 flex justify-center space-x-1 sm:space-x-2">
+                  {[...Array(5)].map((_, i) => (
+                    <Star 
+                      key={i} 
+                      className="h-3 w-3 sm:h-4 sm:w-4 lg:h-5 lg:w-5 text-yellow-300 fill-current animate-pulse" 
+                      style={{ animationDelay: `${i * 200}ms` }} 
+                    />
+                  ))}
+                </div>
+                <p className="text-xs text-blue-200 mt-1 sm:mt-2">Rated 4.9/5 by our customers</p>
               </div>
-              <p className="text-xs text-blue-200 mt-2">Rated 4.9/5 by our customers</p>
             </div>
           </div>
 
           {/* Form Panel */}
           <div className={`
-            relative w-1/2 h-full flex items-start justify-center p-6 lg:p-8 xl:p-12 overflow-y-auto
+            relative w-full lg:w-1/2 flex-1 flex items-start justify-center p-3 sm:p-6 lg:p-8 xl:p-12 overflow-y-auto
             transition-all duration-1000 ease-in-out
-            ${isSignup ? 'order-1' : 'order-2'}
+            ${isSignup ? 'lg:order-1' : 'lg:order-2'}
           `}>
             
             {/* Hardware Background Images */}
@@ -171,26 +175,26 @@ const AuthLayout = ({
             </div>
             
             {/* Form Container with Glass Effect */}
-            <div className="relative w-full max-w-md slide-content py-8 my-auto z-10">
-              <div className="bg-white/95 backdrop-blur-sm rounded-2xl p-6 lg:p-8 shadow-xl border border-white/20">
+            <div className="relative w-full max-w-md slide-content py-4 sm:py-8 my-auto z-10">
+              <div className="bg-white/95 backdrop-blur-sm rounded-xl sm:rounded-2xl p-4 sm:p-6 lg:p-8 shadow-xl border border-white/20">
               
               {/* Header */}
-              <div className="text-center mb-6">
-                <div className="inline-flex items-center justify-center w-14 h-14 lg:w-16 lg:h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl mb-4 shadow-lg">
-                  <ShoppingBag className="h-7 w-7 lg:h-8 lg:w-8 text-white" />
+              <div className="text-center mb-4 sm:mb-6">
+                <div className="inline-flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl mb-3 sm:mb-4 shadow-lg">
+                  <ShoppingBag className="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8 text-white" />
                 </div>
-                <h2 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-2">{title}</h2>
-                <p className="text-gray-600 text-sm lg:text-base">{subtitle}</p>
+                <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 mb-1 sm:mb-2">{title}</h2>
+                <p className="text-gray-600 text-xs sm:text-sm lg:text-base px-2">{subtitle}</p>
               </div>
 
                 {/* Form Content */}
-                <div className="space-y-4 lg:space-y-6">
+                <div className="space-y-3 sm:space-y-4 lg:space-y-6">
                   {children}
                 </div>
 
                 {/* Footer */}
-                <div className="mt-6 lg:mt-8 text-center">
-                  <p className="text-sm text-gray-600">
+                <div className="mt-4 sm:mt-6 lg:mt-8 text-center">
+                  <p className="text-xs sm:text-sm text-gray-600">
                     {footerText}{" "}
                     <Link
                       to={footerLink}
@@ -201,7 +205,7 @@ const AuthLayout = ({
                   </p>
                   
                   {/* Business Login Link */}
-                  <div className="mt-4 pt-4 border-t border-gray-100">
+                  <div className="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-gray-100">
                     <p className="text-xs text-gray-500">
                       Admin/Staff/Supplier?{" "}
                       <Link 
@@ -279,6 +283,24 @@ const AuthLayout = ({
         @media (max-width: 1024px) {
           .slide-content {
             animation: slideInUp 0.8s ease-out 0.3s both;
+          }
+        }
+        
+        /* Mobile specific adjustments */
+        @media (max-width: 640px) {
+          .slide-content {
+            animation: fadeInUp 0.6s ease-out 0.2s both;
+          }
+        }
+        
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
           }
         }
       `}</style>

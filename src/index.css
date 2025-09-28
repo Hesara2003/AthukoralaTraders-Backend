@@ -69,3 +69,34 @@
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+
+/* Mobile-specific responsive utilities */
+@media (max-width: 640px) {
+  /* Ensure minimum touch targets on mobile */
+  button, input[type="checkbox"], input[type="radio"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Smaller input fields have adequate padding */
+  input[type="text"], input[type="email"], input[type="password"] {
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+  
+  /* Better spacing for mobile forms */
+  .mobile-form-spacing {
+    padding: 1rem;
+  }
+  
+  /* Prevent horizontal scroll */
+  body {
+    overflow-x: hidden;
+  }
+}
+
+/* Smooth transitions for responsive elements */
+@media (prefers-reduced-motion: no-preference) {
+  .responsive-transition {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+}
