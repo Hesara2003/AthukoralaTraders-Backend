@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login Button Test</title>
+</head>
+<body>
+    <h1>Login Button Debug Test</h1>
+    <p>If you can see this, the basic HTML is working.</p>
+    
+    <button onclick="testAlert()">Test Alert Button</button>
+    <a href="/login" onclick="testNavigation()">Test Login Link</a>
+    
+    <script>
+        function testAlert() {
+            alert('Button click works!');
+        }
+        
+        function testNavigation() {
+            console.log('Login link clicked');
+            return true; // Allow normal navigation
+        }
+        
+        console.log('Debug test page loaded');
+    </script>
+</body>
+</html>

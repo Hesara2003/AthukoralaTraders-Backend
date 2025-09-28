@@ -1,0 +1,96 @@
+<!-- Hardware Store Hero Background SVG -->
+<svg viewBox="0 0 1200 600" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background gradient -->
+  <defs>
+    <linearGradient id="heroGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1e3a8a;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#1e40af;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1d4ed8;stop-opacity:1" />
+    </linearGradient>
+    
+    <pattern id="toolPattern" x="0" y="0" width="100" height="100" patternUnits="userSpaceOnUse">
+      <rect width="100" height="100" fill="none"/>
+      <!-- Tool silhouettes -->
+      <g opacity="0.1" fill="white">
+        <rect x="10" y="20" width="30" height="6" rx="3" transform="rotate(45 25 23)"/>
+        <circle cx="35" cy="15" r="4"/>
+        <rect x="60" y="30" width="25" height="4" rx="2" transform="rotate(-30 72.5 32)"/>
+        <polygon points="15,60 25,50 35,60 30,70 20,70"/>
+        <rect x="70" y="60" width="20" height="20" rx="10" fill="none" stroke="white" stroke-width="2"/>
+      </g>
+    </pattern>
+  </defs>
+  
+  <!-- Main background -->
+  <rect width="1200" height="600" fill="url(#heroGrad)"/>
+  
+  <!-- Tool pattern overlay -->
+  <rect width="1200" height="600" fill="url(#toolPattern)"/>
+  
+  <!-- Hardware store building silhouette -->
+  <g opacity="0.2" fill="white">
+    <!-- Building structure -->
+    <rect x="800" y="300" width="350" height="250" rx="10"/>
+    <rect x="850" y="250" width="250" height="50" rx="5"/>
+    <rect x="870" y="350" width="40" height="60" rx="5"/>
+    <rect x="930" y="350" width="40" height="60" rx="5"/>
+    <rect x="990" y="350" width="40" height="60" rx="5"/>
+    <rect x="1050" y="350" width="40" height="60" rx="5"/>
+    
+    <!-- Roof -->
+    <polygon points="825,250 975,200 1125,250"/>
+    
+    <!-- Sign -->
+    <rect x="875" y="270" width="200" height="40" rx="5"/>
+  </g>
+  
+  <!-- Floating tools and hardware elements -->
+  <g opacity="0.15" fill="white">
+    <!-- Hammer -->
+    <rect x="200" y="150" width="60" height="12" rx="6" transform="rotate(30 230 156)"/>
+    <circle cx="275" cy="135" r="15"/>
+    
+    <!-- Wrench -->
+    <rect x="400" y="200" width="80" height="10" rx="5" transform="rotate(-15 440 205)"/>
+    <circle cx="385" cy="210" r="8"/>
+    <circle cx="495" cy="190" r="8"/>
+    
+    <!-- Screws and bolts -->
+    <circle cx="150" cy="400" r="8"/>
+    <rect x="146" y="396" width="8" height="8"/>
+    <circle cx="550" cy="450" r="6"/>
+    <rect x="547" y="447" width="6" height="6"/>
+    
+    <!-- Gear -->
+    <circle cx="700" cy="150" r="25" fill="none" stroke="white" stroke-width="4"/>
+    <circle cx="700" cy="150" r="15"/>
+    <rect x="690" y="140" width="20" height="20" rx="10" opacity="0.7"/>
+    
+    <!-- Level -->
+    <rect x="100" y="500" width="120" height="15" rx="7" transform="rotate(5 160 507.5)"/>
+    <circle cx="130" cy="507" r="4" fill="#fbbf24"/>
+    <circle cx="190" cy="510" r="4" fill="#fbbf24"/>
+    
+    <!-- Drill bits -->
+    <rect x="900" y="100" width="3" height="40" rx="1.5"/>
+    <rect x="910" y="95" width="3" height="45" rx="1.5"/>
+    <rect x="920" y="90" width="3" height="50" rx="1.5"/>
+    
+    <!-- Safety helmet -->
+    <path d="M 300 480 Q 300 460 320 460 Q 340 460 340 480 Q 340 500 320 500 Q 300 500 300 480 Z"/>
+    <rect x="310" y="485" width="20" height="5" rx="2"/>
+  </g>
+  
+  <!-- Subtle connecting lines -->
+  <g opacity="0.1" stroke="white" stroke-width="1" fill="none">
+    <path d="M 100 100 Q 300 200 500 100 Q 700 50 900 150"/>
+    <path d="M 0 300 Q 200 250 400 300 Q 600 350 800 300"/>
+    <path d="M 200 500 Q 400 450 600 500 Q 800 550 1000 500"/>
+  </g>
+  
+  <!-- Light rays -->
+  <g opacity="0.08">
+    <path d="M 0 0 L 200 200 L 0 400 Z" fill="white"/>
+    <path d="M 1200 0 L 1000 200 L 1200 400 Z" fill="white"/>
+  </g>
+</svg>

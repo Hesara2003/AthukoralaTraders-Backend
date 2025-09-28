@@ -1,0 +1,46 @@
+<svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg" fill="none">
+  <!-- Background pattern -->
+  <rect width="400" height="200" fill="url(#ctaPattern)" opacity="0.1"/>
+  
+  <!-- Tools and hardware illustrations -->
+  <g opacity="0.15">
+    <!-- Hammer -->
+    <rect x="50" y="80" width="30" height="8" rx="4" fill="white" transform="rotate(45 65 84)"/>
+    <circle cx="75" cy="70" r="6" fill="white"/>
+    
+    <!-- Wrench -->
+    <rect x="120" y="90" width="40" height="6" rx="3" fill="white" transform="rotate(-30 140 93)"/>
+    <circle cx="110" cy="95" r="4" fill="white"/>
+    <circle cx="160" cy="85" r="4" fill="white"/>
+    
+    <!-- Screwdriver -->
+    <rect x="200" y="60" width="50" height="4" rx="2" fill="white" transform="rotate(15 225 62)"/>
+    <rect x="245" y="56" width="12" height="12" rx="6" fill="white" transform="rotate(15 251 62)"/>
+    
+    <!-- Gear -->
+    <circle cx="320" cy="50" r="15" fill="none" stroke="white" stroke-width="3"/>
+    <circle cx="320" cy="50" r="8" fill="white"/>
+    
+    <!-- Nuts and bolts -->
+    <circle cx="80" cy="140" r="5" fill="white"/>
+    <rect x="77" y="137" width="6" height="6" fill="rgba(255,255,255,0.7)"/>
+    
+    <circle cx="150" cy="160" r="4" fill="white"/>
+    <circle cx="220" cy="150" r="3" fill="white"/>
+    
+    <!-- Construction elements -->
+    <rect x="280" y="120" width="60" height="40" rx="5" fill="white" opacity="0.3"/>
+    <rect x="285" y="125" width="10" height="30" fill="rgba(255,255,255,0.5)"/>
+    <rect x="300" y="125" width="10" height="30" fill="rgba(255,255,255,0.5)"/>
+    <rect x="315" y="125" width="10" height="30" fill="rgba(255,255,255,0.5)"/>
+    <rect x="330" y="125" width="10" height="30" fill="rgba(255,255,255,0.5)"/>
+  </g>
+  
+  <defs>
+    <pattern id="ctaPattern" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+      <circle cx="20" cy="20" r="1" fill="white" opacity="0.2"/>
+      <circle cx="0" cy="0" r="1" fill="white" opacity="0.1"/>
+      <circle cx="40" cy="40" r="1" fill="white" opacity="0.1"/>
+    </pattern>
+  </defs>
+</svg>

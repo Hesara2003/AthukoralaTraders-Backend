@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Google Auth</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        button {
+            background: #4285f4;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background: #3367d6;
+        }
+        .result {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background: #f9f9f9;
+        }
+        .error {
+            border-color: #ff4444;
+            background: #ffeeee;
+        }
+        .success {
+            border-color: #44ff44;
+            background: #eeffee;
+        }
+    </style>
+</head>
+<body>
+    <h1>Google Auth Test</h1>
+    <p>This page tests the new Google Identity Services (GIS) implementation.</p>
+    
+    <button onclick="testGoogleAuth()">Test Google Sign-In</button>
+    <button onclick="clearResult()">Clear Result</button>
+    
+    <div id="result" class="result" style="display: none;"></div>
+
+    <script>
+        // Google Client ID (hardcoded for testing)
+        const CLIENT_ID = '869175912443-dldas4e1kkkc6v1cqbptfcnst5ktc3l9.apps.googleusercontent.com';
+        
+        let isGoogleLoaded = false;
+
+        // Load Google Identity Services
+        function loadGoogleIdentityServices() {
+            return new Promise((resolve, reject) => {
+                if (window.google?.accounts) {
+                    resolve(window.google);
+                    return;
+                }
+
+                const script = document.createElement('script');
+                script.src = 'https://accounts.google.com/gsi/client';
+                script.async = true;
+                script.defer = true;
+                
+                script.onload = () => {
+                    if (window.google?.accounts) {
+                        isGoogleLoaded = true;
+                        resolve(window.google);
+                    } else {
+                        reject(new Error('Google Identity Services not available after script load'));
+                    }
+                };
+                
+                script.onerror = () => {
+                    reject(new Error('Failed to load Google Identity Services'));
+                };
+
+                document.head.appendChild(script);
+            });
+        }
+
+        // Test Google Authentication
+        async function testGoogleAuth() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'result';
+            resultDiv.innerHTML = 'Loading Google Identity Services...';
+
+            try {
+                // Load Google Identity Services
+                if (!isGoogleLoaded) {
+                    await loadGoogleIdentityServices();
+                }
+
+                resultDiv.innerHTML = 'Initializing Google Sign-In...';
+
+                // Initialize Google ID
+                window.google.accounts.id.initialize({
+                    client_id: CLIENT_ID,
+                    callback: (credentialResponse) => {
+                        try {
+                            // Decode the JWT token to get user info
+                            const payload = JSON.parse(atob(credentialResponse.credential.split('.')[1]));
+                            
+                            const profile = {
+                                id: payload.sub,
+                                name: payload.name,
+                                email: payload.email,
+                                imageUrl: payload.picture
+                            };
+
+                            resultDiv.className = 'result success';
+                            resultDiv.innerHTML = `
+                                <h3>✅ Google Sign-In Successful!</h3>
+                                <p><strong>Name:</strong> ${profile.name}</p>
+                                <p><strong>Email:</strong> ${profile.email}</p>
+                                <p><strong>ID:</strong> ${profile.id}</p>
+                                <p><strong>Picture:</strong> <img src="${profile.imageUrl}" width="50" height="50" style="border-radius: 50%;"></p>
+                                <p><strong>ID Token:</strong> ${credentialResponse.credential.substring(0, 50)}...</p>
+                            `;
+                        } catch (error) {
+                            resultDiv.className = 'result error';
+                            resultDiv.innerHTML = `<h3>❌ Error processing credential:</h3><p>${error.message}</p>`;
+                        }
+                    },
+                    auto_select: false,
+                    cancel_on_tap_outside: false
+                });
+
+                // Show the sign-in prompt
+                window.google.accounts.id.prompt((notification) => {
+                    if (notification.isNotDisplayed()) {
+                        // If prompt is not displayed, show button instead
+                        showSignInButton();
+                    } else if (notification.isSkippedMoment()) {
+                        // User closed the prompt, show button
+                        showSignInButton();
+                    }
+                });
+
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `<h3>❌ Error:</h3><p>${error.message}</p>`;
+            }
+        }
+
+        function showSignInButton() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = `
+                <p>Sign-in prompt not available. Click the button below:</p>
+                <div id="googleSignInButton"></div>
+            `;
+
+            window.google.accounts.id.renderButton(
+                document.getElementById('googleSignInButton'),
+                {
+                    type: 'standard',
+                    size: 'large',
+                    text: 'signin_with',
+                    shape: 'rectangular',
+                    logo_alignment: 'left',
+                }
+            );
+        }
+
+        function clearResult() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.style.display = 'none';
+            resultDiv.innerHTML = '';
+        }
+
+        // Load Google on page load
+        window.addEventListener('load', async () => {
+            try {
+                await loadGoogleIdentityServices();
+                console.log('Google Identity Services loaded successfully');
+            } catch (error) {
+                console.error('Failed to load Google Identity Services:', error);
+            }
+        });
+    </script>
+</body>
+</html>

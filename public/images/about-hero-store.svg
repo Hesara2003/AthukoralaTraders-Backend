@@ -1,0 +1,123 @@
+<!-- About Page Hero Background - Hardware Store Interior -->
+<svg viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Gradients -->
+    <linearGradient id="storeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1e40af;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#1d4ed8;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#2563eb;stop-opacity:1" />
+    </linearGradient>
+    
+    <linearGradient id="shelfGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#6b7280;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#374151;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Patterns for texture -->
+    <pattern id="floorPattern" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+      <rect width="40" height="40" fill="#e5e7eb" opacity="0.3"/>
+      <rect x="1" y="1" width="38" height="38" fill="none" stroke="#d1d5db" stroke-width="0.5" opacity="0.5"/>
+    </pattern>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1920" height="1080" fill="url(#storeGrad)"/>
+  
+  <!-- Store Floor -->
+  <rect x="0" y="700" width="1920" height="380" fill="url(#floorPattern)"/>
+  
+  <!-- Store Shelving - Left Side -->
+  <g opacity="0.4">
+    <!-- Shelf structure -->
+    <rect x="100" y="300" width="400" height="500" fill="url(#shelfGrad)" rx="10"/>
+    <rect x="120" y="320" width="360" height="20" fill="#9ca3af"/>
+    <rect x="120" y="420" width="360" height="20" fill="#9ca3af"/>
+    <rect x="120" y="520" width="360" height="20" fill="#9ca3af"/>
+    <rect x="120" y="620" width="360" height="20" fill="#9ca3af"/>
+    
+    <!-- Tools and products on shelves -->
+    <rect x="130" y="340" width="80" height="60" fill="#fbbf24" opacity="0.8" rx="5"/>
+    <rect x="220" y="340" width="60" height="60" fill="#ef4444" opacity="0.8" rx="5"/>
+    <rect x="290" y="340" width="90" height="60" fill="#10b981" opacity="0.8" rx="5"/>
+    <rect x="390" y="340" width="70" height="60" fill="#8b5cf6" opacity="0.8" rx="5"/>
+    
+    <circle cx="170" cy="470" r="20" fill="#06b6d4" opacity="0.7"/>
+    <circle cx="250" cy="470" r="15" fill="#f59e0b" opacity="0.7"/>
+    <rect x="300" y="450" width="50" height="40" fill="#84cc16" opacity="0.7" rx="3"/>
+    <rect x="370" y="450" width="80" height="40" fill="#ec4899" opacity="0.7" rx="3"/>
+  </g>
+  
+  <!-- Store Shelving - Right Side -->
+  <g opacity="0.4">
+    <rect x="1420" y="300" width="400" height="500" fill="url(#shelfGrad)" rx="10"/>
+    <rect x="1440" y="320" width="360" height="20" fill="#9ca3af"/>
+    <rect x="1440" y="420" width="360" height="20" fill="#9ca3af"/>
+    <rect x="1440" y="520" width="360" height="20" fill="#9ca3af"/>
+    <rect x="1440" y="620" width="360" height="20" fill="#9ca3af"/>
+    
+    <!-- More products -->
+    <rect x="1450" y="340" width="70" height="70" fill="#dc2626" opacity="0.8" rx="5"/>
+    <rect x="1530" y="340" width="90" height="70" fill="#0891b2" opacity="0.8" rx="5"/>
+    <rect x="1630" y="340" width="60" height="70" fill="#ca8a04" opacity="0.8" rx="5"/>
+    <rect x="1700" y="340" width="80" height="70" fill="#7c3aed" opacity="0.8" rx="5"/>
+  </g>
+  
+  <!-- Center Display - Tool Counter -->
+  <g opacity="0.5">
+    <rect x="760" y="500" width="400" height="150" fill="#374151" rx="15"/>
+    <rect x="770" y="510" width="380" height="20" fill="#6b7280"/>
+    
+    <!-- Display items -->
+    <circle cx="820" cy="580" r="25" fill="#fbbf24"/>
+    <rect x="880" y="555" width="60" height="50" fill="#ef4444" rx="8"/>
+    <circle cx="980" cy="580" r="20" fill="#10b981"/>
+    <rect x="1020" y="560" width="40" height="40" fill="#8b5cf6" rx="5"/>
+    <circle cx="1100" cy="580" r="22" fill="#06b6d4"/>
+  </g>
+  
+  <!-- Ceiling Elements -->
+  <g opacity="0.2">
+    <!-- Light fixtures -->
+    <rect x="400" y="100" width="200" height="40" fill="white" rx="20"/>
+    <rect x="800" y="100" width="200" height="40" fill="white" rx="20"/>
+    <rect x="1200" y="100" width="200" height="40" fill="white" rx="20"/>
+    
+    <!-- Light beams -->
+    <polygon points="500,140 450,300 550,300" fill="white" opacity="0.1"/>
+    <polygon points="900,140 850,300 950,300" fill="white" opacity="0.1"/>
+    <polygon points="1300,140 1250,300 1350,300" fill="white" opacity="0.1"/>
+  </g>
+  
+  <!-- Store Signage -->
+  <g opacity="0.3">
+    <rect x="760" y="200" width="400" height="80" fill="#1f2937" rx="10"/>
+    <rect x="770" y="210" width="380" height="60" fill="#374151" rx="8"/>
+    
+    <!-- Sign elements representing "HARDWARE" -->
+    <rect x="790" y="230" width="40" height="20" fill="#fbbf24"/>
+    <rect x="840" y="230" width="40" height="20" fill="#ef4444"/>
+    <rect x="890" y="230" width="40" height="20" fill="#10b981"/>
+    <rect x="940" y="230" width="40" height="20" fill="#8b5cf6"/>
+    <rect x="990" y="230" width="40" height="20" fill="#06b6d4"/>
+    <rect x="1040" y="230" width="40" height="20" fill="#f59e0b"/>
+    <rect x="1090" y="230" width="40" height="20" fill="#84cc16"/>
+  </g>
+  
+  <!-- Floating particles for atmosphere -->
+  <g opacity="0.1">
+    <circle cx="300" cy="200" r="2" fill="white"/>
+    <circle cx="600" cy="150" r="1.5" fill="white"/>
+    <circle cx="900" cy="180" r="2.5" fill="white"/>
+    <circle cx="1200" cy="160" r="1.8" fill="white"/>
+    <circle cx="1500" cy="190" r="2.2" fill="white"/>
+    <circle cx="150" cy="250" r="1.2" fill="white"/>
+    <circle cx="1700" cy="220" r="1.8" fill="white"/>
+  </g>
+  
+  <!-- Perspective lines for depth -->
+  <g opacity="0.05" stroke="white" stroke-width="1" fill="none">
+    <path d="M 0 400 Q 960 350 1920 400"/>
+    <path d="M 0 600 Q 960 550 1920 600"/>
+    <path d="M 200 300 L 960 280 L 1720 300"/>
+  </g>
+</svg>
