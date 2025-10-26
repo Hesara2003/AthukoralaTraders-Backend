@@ -6,13 +6,13 @@ import GoogleOAuthButton from "../../components/GoogleOAuthButton";
 import AuthLayout from "../../components/AuthLayout";
 
 const InputField = ({ icon: Icon, label, error, type = "text", showPassword, onTogglePassword, ...props }) => (
-  <div className="space-y-1 sm:space-y-2">
-    <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1 sm:mb-2">
+  <div className="space-y-2">
+    <label className="block text-sm font-semibold text-gray-700 mb-2">
       {label}
     </label>
     <div className="relative group">
-      <div className="absolute inset-y-0 left-0 pl-3 sm:pl-4 flex items-center pointer-events-none">
-        <Icon className={`h-4 w-4 sm:h-5 sm:w-5 transition-colors duration-200 ${
+      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+        <Icon className={`h-5 w-5 transition-colors duration-200 ${
           error 
             ? 'text-red-500' 
             : 'text-gray-400 group-focus-within:text-blue-600'
@@ -22,7 +22,7 @@ const InputField = ({ icon: Icon, label, error, type = "text", showPassword, onT
         type={type}
         {...props}
         className={`
-          block w-full pl-10 sm:pl-12 pr-3 sm:pr-4 py-3 sm:py-4 border-2 rounded-lg sm:rounded-xl shadow-sm bg-white text-sm sm:text-base
+          block w-full pl-12 pr-4 py-4 border-2 rounded-xl shadow-sm bg-white
           focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500
           transition-all duration-200 placeholder-gray-400
           hover:border-gray-400 hover:shadow-md
@@ -36,12 +36,12 @@ const InputField = ({ icon: Icon, label, error, type = "text", showPassword, onT
         <button
           type="button"
           onClick={onTogglePassword}
-          className="absolute inset-y-0 right-0 pr-3 sm:pr-4 flex items-center hover:bg-gray-100 rounded-r-lg sm:rounded-r-xl transition-colors min-w-[44px] justify-center"
+          className="absolute inset-y-0 right-0 pr-4 flex items-center hover:bg-gray-100 rounded-r-xl transition-colors"
         >
           {showPassword ? (
-            <EyeOff className="h-4 w-4 sm:h-5 sm:w-5 text-gray-400 hover:text-gray-600" />
+            <EyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600" />
           ) : (
-            <Eye className="h-4 w-4 sm:h-5 sm:w-5 text-gray-400 hover:text-gray-600" />
+            <Eye className="h-5 w-5 text-gray-400 hover:text-gray-600" />
           )}
         </button>
       )}
@@ -52,8 +52,8 @@ const InputField = ({ icon: Icon, label, error, type = "text", showPassword, onT
       } pointer-events-none`}></div>
     </div>
     {error && (
-      <div className="flex items-center gap-2 text-xs sm:text-sm text-red-600 bg-red-50 px-2 sm:px-3 py-2 rounded-lg">
-        <AlertCircle className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
+      <div className="flex items-center gap-2 text-sm text-red-600 bg-red-50 px-3 py-2 rounded-lg">
+        <AlertCircle className="h-4 w-4 flex-shrink-0" />
         <span>{error}</span>
       </div>
     )}
@@ -111,6 +111,7 @@ export default function Login() {
         data.user.username, 
         data.user.role,
         {
+          userId: data.user.id || data.user.userId,
           email: data.user.email,
           profileImage: data.user.profileImage,
           fullName: data.user.fullName,
@@ -160,19 +161,24 @@ export default function Login() {
       const data = await response.json();
 
       if (response.ok && data.token) {
-        // Use the auth context to login
-        login(data.token, formData.username);
+        // Use the auth context to login with all user data from backend
+        login(data.token, formData.username, data.role, {
+          userId: data.userId,
+          email: data.email
+        });
         
         showNotification("success", "Login successful! Redirecting...");
         
-        // Get user role from the decoded token to determine redirect path
-        const base64Url = data.token.split('.')[1];
-        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-        const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-          return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-        }).join(''));
-        const decodedToken = JSON.parse(jsonPayload);
-        const userRole = decodedToken?.role || 'CUSTOMER';
+        // Get user role from response or decode token
+        const userRole = data.role || (() => {
+          const base64Url = data.token.split('.')[1];
+          const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+          const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+          }).join(''));
+          const decodedToken = JSON.parse(jsonPayload);
+          return decodedToken?.role || 'CUSTOMER';
+        })();
         
         // Redirect based on user role
         // Customer login should be used only by CUSTOMER accounts.
@@ -210,7 +216,7 @@ export default function Login() {
       {/* Notification */}
       {notification && (
         <div className={`
-          mb-4 sm:mb-6 p-3 sm:p-4 rounded-lg sm:rounded-xl flex items-center gap-2 sm:gap-3 animate-in slide-in-from-top-2 duration-300 border
+          mb-6 p-4 rounded-xl flex items-center gap-3 animate-in slide-in-from-top-2 duration-300 border
           ${notification.type === 'success' 
             ? 'bg-gradient-to-r from-green-50 to-emerald-50 border-green-200 text-green-800' 
             : 'bg-gradient-to-r from-red-50 to-pink-50 border-red-200 text-red-800'
@@ -218,18 +224,18 @@ export default function Login() {
         `}>
           {notification.type === 'success' ? (
             <div className="p-1 bg-green-100 rounded-full">
-              <LogIn className="h-3 w-3 sm:h-4 sm:w-4 text-green-600" />
+              <LogIn className="h-4 w-4 text-green-600" />
             </div>
           ) : (
             <div className="p-1 bg-red-100 rounded-full">
-              <AlertCircle className="h-3 w-3 sm:h-4 sm:w-4 text-red-600" />
+              <AlertCircle className="h-4 w-4 text-red-600" />
             </div>
           )}
-          <span className="font-semibold text-xs sm:text-sm">{notification.message}</span>
+          <span className="font-semibold text-sm">{notification.message}</span>
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-6">
         <InputField
           icon={User}
           label="Username or Email"
@@ -256,20 +262,20 @@ export default function Login() {
           onTogglePassword={() => setShowPassword(!showPassword)}
         />
 
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
+        <div className="flex items-center justify-between">
           <div className="flex items-center">
             <input
               id="remember-me"
               type="checkbox"
               className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded transition-colors"
             />
-            <label htmlFor="remember-me" className="ml-2 sm:ml-3 block text-xs sm:text-sm font-medium text-gray-700">
+            <label htmlFor="remember-me" className="ml-3 block text-sm font-medium text-gray-700">
               Keep me signed in
             </label>
           </div>
           <Link
             to="/forgot-password"
-            className="text-xs sm:text-sm font-semibold text-blue-600 hover:text-purple-600 transition-colors text-center sm:text-right"
+            className="text-sm font-semibold text-blue-600 hover:text-purple-600 transition-colors"
           >
             Forgot password?
           </Link>
@@ -279,9 +285,9 @@ export default function Login() {
           type="submit"
           disabled={isLoading}
           className={`
-            w-full flex items-center justify-center gap-2 sm:gap-3 py-3 sm:py-4 px-4 sm:px-6 rounded-lg sm:rounded-xl font-semibold text-white text-sm sm:text-base
+            w-full flex items-center justify-center gap-3 py-4 px-6 rounded-xl font-semibold text-white
             transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500
-            transform hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl min-h-[44px]
+            transform hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl
             ${isLoading 
               ? 'bg-gradient-to-r from-gray-400 to-gray-500 cursor-not-allowed transform-none' 
               : 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700'
@@ -290,24 +296,24 @@ export default function Login() {
         >
           {isLoading ? (
             <>
-              <Loader2 className="h-4 w-4 sm:h-5 sm:w-5 animate-spin" />
+              <Loader2 className="h-5 w-5 animate-spin" />
               <span>Signing you in...</span>
             </>
           ) : (
             <>
-              <Shield className="h-4 w-4 sm:h-5 sm:w-5" />
+              <Shield className="h-5 w-5" />
               <span>Sign In Securely</span>
             </>
           )}
         </button>
 
         {/* Enhanced Divider */}
-        <div className="relative my-4 sm:my-8">
+        <div className="relative my-8">
           <div className="absolute inset-0 flex items-center">
             <div className="w-full border-t border-gray-200"></div>
           </div>
           <div className="relative flex justify-center">
-            <span className="px-4 sm:px-6 bg-white text-xs sm:text-sm font-medium text-gray-500 border border-gray-200 rounded-full">
+            <span className="px-6 bg-white text-sm font-medium text-gray-500 border border-gray-200 rounded-full">
               or continue with
             </span>
           </div>
@@ -326,13 +332,11 @@ export default function Login() {
       </form>
 
       {/* Trust Indicators */}
-      <div className="mt-4 sm:mt-8 text-center">
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 text-xs text-gray-500">
-          <div className="flex items-center gap-2">
-            <Shield className="h-3 w-3 sm:h-4 sm:w-4" />
-            <span>256-bit SSL encrypted</span>
-          </div>
-          <span className="hidden sm:inline">•</span>
+      <div className="mt-8 text-center">
+        <div className="flex items-center justify-center gap-2 text-xs text-gray-500">
+          <Shield className="h-4 w-4" />
+          <span>256-bit SSL encrypted</span>
+          <span>•</span>
           <span>GDPR compliant</span>
         </div>
       </div>

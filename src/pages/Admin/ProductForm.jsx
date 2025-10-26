@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import { Package, Tag, FileText, DollarSign, Hash, Upload, Check, AlertCircle, Loader2, ArrowLeft, User, LogOut, X, Image } from "lucide-react";
 import AdminLayout from '../../components/AdminLayout';
+import { ProductApi } from "../../utils/productApi";
 
 export default function ProductForm() {
   const navigate = useNavigate();
@@ -28,7 +29,7 @@ export default function ProductForm() {
   const [isUploadingImages, setIsUploadingImages] = useState(false);
   const [dragActive, setDragActive] = useState(false);
   const [imageUrlInput, setImageUrlInput] = useState("");
-  const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:8080';
+  const API_BASE = import.meta.env.VITE_API_BASE?.replace(/\/$/, '') || '';
 
   useEffect(() => {
     if (isEditing) {
@@ -39,13 +40,9 @@ export default function ProductForm() {
   const fetchProduct = async () => {
     try {
       setIsLoadingProduct(true);
-      const response = await fetch(`http://localhost:8080/api/admin/products/${id}`);
+      // Use ProductApi.get() with Bearer token authentication
+      const product = await ProductApi.get(id);
       
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      
-      const product = await response.json();
       setFormData({
         name: product.name || "",
         category: product.category || "",
@@ -55,8 +52,8 @@ export default function ProductForm() {
         images: product.images || []
       });
     } catch (err) {
-      console.error(err);
-      showNotification("error", "Failed to load product data");
+      console.error('Failed to fetch product:', err);
+      showNotification("error", "Failed to load product data: " + err.message);
     } finally {
       setIsLoadingProduct(false);
     }
@@ -191,8 +188,13 @@ export default function ProductForm() {
         formData.append('files', file);
       });
 
-      const response = await fetch('http://localhost:8080/api/admin/products/upload-images', {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_BASE}/api/admin/products/upload-images`, {
         method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        credentials: 'include',
         body: formData,
       });
 
@@ -233,46 +235,36 @@ export default function ProductForm() {
         images: allImages
       };
 
-      const url = isEditing 
-        ? `http://localhost:8080/api/admin/products/${id}`
-        : "http://localhost:8080/api/admin/products";
-      
-      const method = isEditing ? "PUT" : "POST";
-      
-      const response = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(productData),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        showNotification("success", `Product ${isEditing ? 'updated' : 'created'} successfully!`);
-        
-        if (!isEditing) {
-          setFormData({
-            name: "",
-            category: "",
-            description: "",
-            price: 0,
-            stock: 0,
-            images: []
-          });
-          setSelectedFiles([]);
-          setImagePreviewUrls([]);
-        }
-        
-        setTimeout(() => {
-          navigate('/admin/products');
-        }, 1500);
-        
-        console.log(data);
+      // Use ProductApi with proper authentication
+      let data;
+      if (isEditing) {
+        data = await ProductApi.update(id, productData);
       } else {
-        throw new Error(data.message || `Failed to ${isEditing ? 'update' : 'create'} product`);
+        data = await ProductApi.create(productData);
       }
+
+      showNotification("success", `Product ${isEditing ? 'updated' : 'created'} successfully!`);
+      
+      if (!isEditing) {
+        setFormData({
+          name: "",
+          category: "",
+          description: "",
+          price: 0,
+          stock: 0,
+          images: []
+        });
+        setSelectedFiles([]);
+        setImagePreviewUrls([]);
+      }
+      
+      setTimeout(() => {
+        navigate('/admin/products');
+      }, 1500);
+      
+      console.log(data);
     } catch (err) {
-      console.error(err);
+      console.error('Submit error:', err);
       showNotification("error", err.message || `Failed to ${isEditing ? 'update' : 'create'} product`);
     } finally {
       setIsLoading(false);

@@ -1,7 +1,7 @@
 import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { FileText, LogOut } from 'lucide-react';
+import { FileText, LogOut, Package, Calculator, Receipt } from 'lucide-react';
 
 export default function SupplierLayout({ title, subtitle, children, actions }) {
   const { user, logout } = useAuth();
@@ -9,6 +9,9 @@ export default function SupplierLayout({ title, subtitle, children, actions }) {
 
   const navItems = [
     { to: '/supplier/purchase-orders', label: 'Purchase Orders', icon: <FileText className="h-4 w-4" /> },
+    { to: '/supplier/catalog', label: 'Catalog Management', icon: <Package className="h-4 w-4" /> },
+    { to: '/supplier/invoices/matching', label: 'Invoice Matching', icon: <Receipt className="h-4 w-4" /> },
+    { to: '/supplier/reconciliation', label: 'Reconciliation', icon: <Calculator className="h-4 w-4" /> },
   ];
 
   const linkBase = 'flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors';

@@ -13,14 +13,37 @@ import InvoiceList from "./pages/Admin/InvoiceList";
 import UserList from "./pages/Admin/UserList";
 import ProductPage from "./pages/Customer/ProductPage";
 import ProductDetail from "./pages/Customer/ProductDetail";
+import OrderHistory from "./pages/Customer/OrderHistory";
+import CheckoutPage from "./pages/Customer/CheckoutPage";
+import OrderConfirmation from "./pages/Customer/OrderConfirmation";
+import PaymentGateway from "./pages/Customer/PaymentGateway";
 import PromotionList from "./pages/Admin/PromotionList";
 import PromotionForm from "./pages/Admin/PromotionForm";
 import Dashboard from "./pages/Admin/Dashboard";
+import Reports from "./pages/Admin/Reports";
+import QuickSale from "./pages/Sales/QuickSale";
 import SupplierPurchaseOrderList from "./pages/Supplier/PurchaseOrderList";
 import SupplierPurchaseOrderForm from "./pages/Supplier/PurchaseOrderForm";
 import Homepage from "./pages/Homepage";
 import AboutPage from "./pages/AboutPage";
 import ContactPage from "./pages/ContactPage";
+import SearchDemo from "./pages/SearchDemo";
+import DeliveryTimelineDemo from "./pages/DeliveryTimelineDemo";
+import InvoiceDetails from "./pages/Finance/InvoiceDetails";
+import FinanceInvoiceList from "./pages/Finance/InvoiceList";
+import FinanceUpload from "./pages/Finance/UploadInvoice";
+import ReceiveGoods from "./pages/Admin/ReceiveGoods";
+import GRNList from "./pages/Admin/GRNList";
+import ProcessReturnExchange from "./pages/Admin/ProcessReturnExchange";
+import AuditLogs from "./pages/Admin/AuditLogs";
+import OrderManagement from "./pages/Admin/OrderManagement";
+import FulfillmentDashboard from "./pages/Staff/FulfillmentDashboard";
+import ShiftManagement from "./pages/Staff/ShiftManagement";
+import CatalogManagement from "./pages/Supplier/CatalogManagement";
+import ReconciliationDashboard from "./pages/Supplier/ReconciliationDashboard";
+import InvoiceMatching from "./pages/Supplier/InvoiceMatching";
+import OrderTrackingPage from "./pages/Customer/OrderTrackingPage";
+import ReturnsRefunds from "./pages/Customer/ReturnsRefunds";
 
 function App() {
   return (
@@ -34,6 +57,12 @@ function App() {
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/products" element={<ProductPage />} />
             <Route path="/products/:id" element={<ProductDetail />} />
+            <Route path="/search-demo" element={<SearchDemo />} />
+            <Route path="/delivery-timeline-demo" element={<DeliveryTimelineDemo />} />
+            
+            {/* Order Tracking - Public */}
+            <Route path="/track-order" element={<OrderTrackingPage />} />
+            <Route path="/track-order/:orderId" element={<OrderTrackingPage />} />
             
             {/* ✅ Authentication Routes */}
             {/* Customer-only auth */}
@@ -51,6 +80,42 @@ function App() {
             } 
           />
           <Route 
+            path="/customer/orders" 
+            element={
+              <PrivateRoute>
+                <OrderHistory />
+              </PrivateRoute>
+            } 
+          />
+          <Route 
+            path="/checkout" 
+            element={
+              <PrivateRoute>
+                <CheckoutPage />
+              </PrivateRoute>
+            } 
+          />
+          <Route
+            path="/checkout/payment/:method"
+            element={
+              <PrivateRoute>
+                <PaymentGateway />
+              </PrivateRoute>
+            }
+          />
+          <Route 
+            path="/order-confirmation" 
+            element={
+              <PrivateRoute>
+                <OrderConfirmation />
+              </PrivateRoute>
+            } 
+          />
+          <Route 
+            path="/customer/checkout" 
+            element={<Navigate to="/checkout" replace />} 
+          />
+          <Route 
             path="/customer/products/:id" 
             element={
               <PrivateRoute>
@@ -58,8 +123,26 @@ function App() {
               </PrivateRoute>
             } 
           />
+          
+          {/* Returns & Refunds */}
+          <Route 
+            path="/customer/returns" 
+            element={
+              <PrivateRoute>
+                <ReturnsRefunds />
+              </PrivateRoute>
+            } 
+          />
 
           {/* ✅ Protected Admin Product Management Routes */}
+          <Route 
+            path="/admin/orders" 
+            element={
+              <RoleBasedRoute allowedRoles={['ADMIN', 'STAFF']}>
+                <OrderManagement />
+              </RoleBasedRoute>
+            } 
+          />
           <Route 
             path="/admin/products" 
             element={
@@ -153,6 +236,86 @@ function App() {
             } 
           />
 
+          {/* ✅ Supplier Portal - Catalog Management */}
+          <Route 
+            path="/supplier/catalog" 
+            element={
+              <RoleBasedRoute allowedRoles={['ADMIN', 'STAFF', 'SUPPLIER']}>
+                <CatalogManagement />
+              </RoleBasedRoute>
+            } 
+          />
+
+          {/* ✅ Supplier Portal - Reconciliation */}
+          <Route 
+            path="/supplier/reconciliation" 
+            element={
+              <RoleBasedRoute allowedRoles={['ADMIN', 'STAFF', 'SUPPLIER']}>
+                <ReconciliationDashboard />
+              </RoleBasedRoute>
+            } 
+          />
+
+          {/* ✅ Supplier Portal - Invoice Matching */}
+          <Route 
+            path="/supplier/invoices/matching" 
+            element={
+              <RoleBasedRoute allowedRoles={['ADMIN', 'STAFF', 'SUPPLIER']}>
+                <InvoiceMatching />
+              </RoleBasedRoute>
+            } 
+          />
+
+          {/* ✅ Staff Portal - Fulfillment */}
+          <Route 
+            path="/staff/fulfillment" 
+            element={
+              <RoleBasedRoute allowedRoles={['ADMIN', 'STAFF']}>
+                <FulfillmentDashboard />
+              </RoleBasedRoute>
+            } 
+          />
+
+          {/* ✅ Staff Portal - Shift Management */}
+          <Route 
+            path="/staff/shifts" 
+            element={
+              <RoleBasedRoute allowedRoles={['ADMIN', 'STAFF']}>
+                <ShiftManagement />
+              </RoleBasedRoute>
+            } 
+          />
+
+          {/* ✅ Finance Portal - Invoice Management & Details Display */}
+          <Route 
+            path="/finance/invoices" 
+            element={
+              <RoleBasedRoute allowedRoles={['ADMIN', 'STAFF']}>
+                <FinanceInvoiceList />
+              </RoleBasedRoute>
+            } 
+          />
+          <Route 
+            path="/finance/invoices/upload"
+            element={
+              <RoleBasedRoute allowedRoles={['ADMIN', 'STAFF']}>
+                <FinanceUpload />
+              </RoleBasedRoute>
+            }
+          />
+          <Route 
+            path="/finance/invoices/:id" 
+            element={
+              <RoleBasedRoute allowedRoles={['ADMIN', 'STAFF']}>
+                <InvoiceDetails />
+              </RoleBasedRoute>
+            } 
+          />
+          <Route 
+            path="/finance" 
+            element={<Navigate to="/finance/invoices" replace />} 
+          />
+
           {/* ✅ Protected Admin Dashboard Route */}
           <Route 
             path="/admin/dashboard" 
@@ -162,6 +325,65 @@ function App() {
               </RoleBasedRoute>
             } 
           />
+
+          {/* ✅ Quick Sale - Fast in-store sales processing */}
+          <Route
+            path="/quick-sale"
+            element={
+              <RoleBasedRoute allowedRoles={['ADMIN', 'STAFF']}>
+                <QuickSale />
+              </RoleBasedRoute>
+            }
+          />
+          
+          {/* ✅ Protected Admin Reports Route */}
+          <Route 
+            path="/admin/reports" 
+            element={
+              <RoleBasedRoute allowedRoles={['ADMIN', 'STAFF']}>
+                <Reports />
+              </RoleBasedRoute>
+            } 
+          />
+
+          {/* ✅ Audit Logs - Track all admin actions */}
+          <Route 
+            path="/admin/audit-logs" 
+            element={
+              <RoleBasedRoute allowedRoles={['ADMIN']}>
+                <AuditLogs />
+              </RoleBasedRoute>
+            } 
+          />
+
+          {/* ✅ GRN (Goods Receipt Note) Management - Inventory Receiving */}
+          <Route 
+            path="/admin/receive-goods" 
+            element={
+              <RoleBasedRoute allowedRoles={['ADMIN', 'STAFF']}>
+                <ReceiveGoods />
+              </RoleBasedRoute>
+            } 
+          />
+          <Route 
+            path="/admin/grn-list" 
+            element={
+              <RoleBasedRoute allowedRoles={['ADMIN', 'STAFF']}>
+                <GRNList />
+              </RoleBasedRoute>
+            } 
+          />
+
+          {/* ✅ Return/Exchange Management - Process customer returns and exchanges */}
+          <Route 
+            path="/admin/returns" 
+            element={
+              <RoleBasedRoute allowedRoles={['ADMIN', 'STAFF']}>
+                <ProcessReturnExchange />
+              </RoleBasedRoute>
+            } 
+          />
+          
           <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
         </Routes>
       </Router>

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import AdminLayout from '../../components/AdminLayout';
+import { ProductApi } from '../../utils/productApi';
 import { 
   Search, 
   Filter, 
@@ -34,8 +35,28 @@ export default function ProductList() {
   const [deleteLoading, setDeleteLoading] = useState(null);
 
   useEffect(() => {
+    // Check auth on mount
+    const token = localStorage.getItem('token');
+    const username = localStorage.getItem('username');
+    
+    if (!token || !username) {
+      setError('Not authenticated. Redirecting to login...');
+      setTimeout(() => navigate('/business-login'), 2000);
+      return;
+    }
+    
+    if (!user) {
+      console.warn('User object not loaded yet, waiting...');
+      return;
+    }
+    
+    if (user.role !== 'ADMIN' && user.role !== 'STAFF') {
+      setError(`Access denied. Your role (${user.role}) does not have permission to view admin products.`);
+      return;
+    }
+    
     fetchProducts();
-  }, []);
+  }, [user]);
 
   useEffect(() => {
     filterAndSortProducts();
@@ -44,18 +65,16 @@ export default function ProductList() {
   const fetchProducts = async () => {
     try {
       setLoading(true);
-      const response = await fetch("http://localhost:8080/api/admin/products");
+      console.log('Fetching products with token:', localStorage.getItem('token') ? 'Token exists' : 'No token');
+      console.log('User role:', user?.role);
       
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      
-      const data = await response.json();
+      const data = await ProductApi.list();
+      console.log('Products fetched successfully:', data.length);
       setProducts(data);
       setError(null);
     } catch (err) {
-      console.error(err);
-      setError("Failed to load products. Please try again later.");
+      console.error('Error fetching products:', err);
+      setError(err.message || "Failed to load products. Please check your permissions and try again.");
     } finally {
       setLoading(false);
     }
@@ -80,19 +99,15 @@ export default function ProductList() {
 
     try {
       setDeleteLoading(productId);
-      const response = await fetch(`http://localhost:8080/api/admin/products/${productId}`, {
-        method: 'DELETE',
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
+      
+      // Use ProductApi.delete() with authentication
+      await ProductApi.delete(productId);
+      
       setProducts(products.filter(p => p.id !== productId));
       alert('Product deleted successfully!');
     } catch (err) {
-      console.error(err);
-      alert('Failed to delete product. Please try again.');
+      console.error('Delete error:', err);
+      alert(err.message || 'Failed to delete product. Please try again.');
     } finally {
       setDeleteLoading(null);
     }
@@ -178,10 +193,52 @@ export default function ProductList() {
   );
 
   if (loading) {
-    return <AdminLayout title="Products"><div className="text-gray-600">Loading products...</div></AdminLayout>;
+    return (
+      <AdminLayout title="Products">
+        <div className="flex items-center justify-center py-12">
+          <div className="text-center">
+            <Loader2 className="h-8 w-8 animate-spin text-blue-600 mx-auto mb-4" />
+            <div className="text-gray-600">Loading products...</div>
+          </div>
+        </div>
+      </AdminLayout>
+    );
   }
+  
   if (error) {
-    return <AdminLayout title="Products"><div className="text-red-600">{error}</div></AdminLayout>;
+    return (
+      <AdminLayout title="Products">
+        <div className="bg-red-50 border border-red-200 rounded-lg p-6">
+          <div className="flex items-start gap-3">
+            <AlertCircle className="h-6 w-6 text-red-600 flex-shrink-0 mt-0.5" />
+            <div>
+              <h3 className="font-semibold text-red-900 mb-2">Error Loading Products</h3>
+              <p className="text-red-700 mb-4">{error}</p>
+              <div className="bg-white rounded p-4 mb-4 text-sm">
+                <p className="font-semibold mb-2">Debug Information:</p>
+                <p>Token: {localStorage.getItem('token') ? '✓ Present' : '✗ Missing'}</p>
+                <p>Username: {localStorage.getItem('username') || 'Not set'}</p>
+                <p>User Role: {user?.role || 'Not loaded'}</p>
+              </div>
+              <div className="flex gap-2">
+                <button 
+                  onClick={fetchProducts}
+                  className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+                >
+                  Retry
+                </button>
+                <button 
+                  onClick={() => navigate('/business-login')}
+                  className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700"
+                >
+                  Go to Login
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </AdminLayout>
+    );
   }
 
   return (

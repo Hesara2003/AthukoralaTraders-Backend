@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useCart } from '../contexts/CartContext';
+import { useNavigate } from 'react-router-dom';
 import { 
   ShoppingCart, 
   Plus, 
@@ -22,8 +23,8 @@ const ShoppingCartModal = ({ isOpen, onClose }) => {
     canAddToCart,
     getAvailableQuantity
   } = useCart();
+  const navigate = useNavigate();
   const [notification, setNotification] = useState(null);
-  const [isCheckingOut, setIsCheckingOut] = useState(false);
 
   // Show notification temporarily
   const showNotification = (message, type = 'error') => {
@@ -265,29 +266,14 @@ const ShoppingCartModal = ({ isOpen, onClose }) => {
               <div className="space-y-3">
                 <button
                   onClick={() => {
-                    setIsCheckingOut(true);
-                    // TODO: Implement checkout functionality
-                    setTimeout(() => {
-                      console.log('Proceeding to checkout with items:', cartItems, 'Total:', total);
-                      alert(`Checkout functionality will be implemented next. Total: ${formatPrice(total)}`);
-                      setIsCheckingOut(false);
-                    }, 1500);
+                    onClose?.();
+                    navigate('/checkout');
                   }}
-                  disabled={isCheckingOut}
-                  className="w-full group flex items-center justify-center space-x-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white py-4 rounded-xl font-bold text-lg shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 disabled:opacity-75 disabled:cursor-not-allowed"
+                  className="w-full group flex items-center justify-center space-x-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white py-4 rounded-xl font-bold text-lg shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105"
                 >
-                  {isCheckingOut ? (
-                    <>
-                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                      <span>Processing...</span>
-                    </>
-                  ) : (
-                    <>
-                      <CreditCard className="h-6 w-6 group-hover:animate-pulse" />
-                      <span>Proceed to Checkout</span>
-                      <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                    </>
-                  )}
+                  <CreditCard className="h-6 w-6 group-hover:animate-pulse" />
+                  <span>Proceed to Checkout</span>
+                  <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
                 </button>
                 
                 <button

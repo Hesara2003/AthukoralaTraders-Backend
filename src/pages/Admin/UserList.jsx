@@ -2,16 +2,18 @@ import React, { useEffect, useState } from 'react';
 import { User as UserIcon, Loader2, AlertCircle } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import AdminLayout from '../../components/AdminLayout';
 
 const ROLE_OPTIONS = ['CUSTOMER', 'STAFF', 'ADMIN'];
 
 export default function UserList() {
-  const { getToken, logout } = useAuth();
+  const { user: currentUser, getToken, login, logout } = useAuth();
   const navigate = useNavigate();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [updatingId, setUpdatingId] = useState(null);
+  const API_BASE = (import.meta.env.VITE_API_BASE?.replace(/\/$/, '')) || '';
 
   useEffect(() => {
     fetchUsers();
@@ -22,8 +24,12 @@ export default function UserList() {
     setError(null);
     try {
       const token = getToken();
-      const res = await fetch('http://localhost:8080/api/admin/users', {
-        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+      const res = await fetch(`${API_BASE}/api/admin/users`, {
+        headers: {
+          Accept: 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        credentials: 'include',
       });
 
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -42,7 +48,7 @@ export default function UserList() {
     setUpdatingId(userId);
     try {
       const token = getToken();
-      const res = await fetch(`http://localhost:8080/api/admin/users/${userId}/role`, {
+      const res = await fetch(`${API_BASE}/api/admin/users/${userId}/role`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -57,8 +63,25 @@ export default function UserList() {
       }
 
       const json = await res.json();
-      // Update local state
+      // Update local list state
       setUsers((prev) => prev.map(u => u.id === userId ? { ...u, role: json.newRole || newRole } : u));
+
+      // If the updated user is the currently logged-in user, update AuthContext immediately
+      try {
+        const affectedUsername = json.username || users.find(u => u.id === userId)?.username;
+        if (affectedUsername && currentUser?.username && affectedUsername === currentUser.username) {
+          // Preserve additional user data when re-setting role
+          const additionalData = {
+            email: currentUser.email,
+            profileImage: currentUser.profileImage,
+            fullName: currentUser.fullName,
+            isGoogleAuth: currentUser.isGoogleAuth,
+          };
+          // Reuse the same token and username but override role so UI access gates update immediately
+          login(token, currentUser.username, (json.newRole || newRole), additionalData);
+        }
+      } catch (_) {}
+
       alert('Role updated successfully');
     } catch (err) {
       console.error('Failed to update role', err);
@@ -70,63 +93,37 @@ export default function UserList() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <Loader2 className="h-12 w-12 animate-spin text-blue-600 mx-auto mb-4" />
-          <p className="text-gray-600">Loading users...</p>
+      <AdminLayout title="User Management" subtitle="View and change user roles">
+        <div className="py-16 flex items-center justify-center">
+          <div className="text-center">
+            <Loader2 className="h-12 w-12 animate-spin text-blue-600 mx-auto mb-4" />
+            <p className="text-gray-600">Loading users...</p>
+          </div>
         </div>
-      </div>
+      </AdminLayout>
     );
   }
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center max-w-md mx-auto">
-          <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">Error Loading Users</h2>
-          <p className="text-gray-600 mb-4">{error}</p>
-          <button onClick={fetchUsers} className="bg-blue-600 text-white px-4 py-2 rounded-lg">Try again</button>
+      <AdminLayout title="User Management" subtitle="View and change user roles">
+        <div className="py-16 flex items-center justify-center">
+          <div className="text-center max-w-md mx-auto">
+            <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
+            <h2 className="text-xl font-semibold text-gray-900 mb-2">Error Loading Users</h2>
+            <p className="text-gray-600 mb-4">{error}</p>
+            <button onClick={fetchUsers} className="bg-blue-600 text-white px-4 py-2 rounded-lg">Try again</button>
+          </div>
         </div>
-      </div>
+      </AdminLayout>
     );
   }
 
-  const handleLogout = () => {
-    if (window.confirm('Are you sure you want to logout?')) {
-      logout();
-      navigate('/login');
-    }
-  };
-
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4">
-      <div className="max-w-5xl mx-auto">
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="flex items-center justify-center w-10 h-10 bg-blue-100 rounded-full">
-                <UserIcon className="h-5 w-5 text-blue-600" />
-              </div>
-              <div>
-                <h2 className="font-medium text-gray-900">User Management</h2>
-                <p className="text-sm text-gray-600">View and change user roles</p>
-              </div>
-            </div>
-            <div>
-              <button
-                onClick={handleLogout}
-                className="text-gray-700 hover:text-red-600 hover:bg-red-50 px-3 py-1 rounded transition-colors"
-              >
-                Logout
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
+    <AdminLayout title="User Management" subtitle="View and change user roles">
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Username</th>
@@ -166,10 +163,9 @@ export default function UserList() {
                   </tr>
                 ))}
               </tbody>
-            </table>
-          </div>
+          </table>
         </div>
       </div>
-    </div>
+    </AdminLayout>
   );
 }

@@ -47,12 +47,14 @@ export const AuthProvider = ({ children }) => {
         const role = decodedToken?.role || 'CUSTOMER'; // Default to CUSTOMER if no role found
         
         // Get additional stored data
+        const userId = localStorage.getItem('userId');
         const email = localStorage.getItem('userEmail');
         const profileImage = localStorage.getItem('userProfileImage');
         const fullName = localStorage.getItem('userFullName');
         const isGoogleAuth = decodedToken?.isGoogleAuth || false;
         
         setUser({ 
+          id: userId,
           username, 
           role, 
           email,
@@ -80,6 +82,11 @@ export const AuthProvider = ({ children }) => {
       userRole = decodedToken?.role || 'CUSTOMER';
     }
     
+    // Store user ID if provided
+    if (additionalData.userId) {
+      localStorage.setItem('userId', additionalData.userId);
+    }
+    
     // Store additional user data (for Google OAuth)
     if (additionalData.email) {
       localStorage.setItem('userEmail', additionalData.email);
@@ -92,6 +99,7 @@ export const AuthProvider = ({ children }) => {
     }
     
     setUser({ 
+      id: additionalData.userId,
       username, 
       role: userRole,
       email: additionalData.email,
@@ -105,6 +113,7 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('username');
+    localStorage.removeItem('userId');
     localStorage.removeItem('userEmail');
     localStorage.removeItem('userProfileImage');
     localStorage.removeItem('userFullName');

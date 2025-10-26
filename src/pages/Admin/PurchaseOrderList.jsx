@@ -29,9 +29,17 @@ export default function PurchaseOrderList() {
   const cancelPo = async (id) => {
     if (!confirm('Cancel this purchase order?')) return;
     const base = import.meta.env.VITE_API_BASE || 'http://localhost:8080';
+    const token = localStorage.getItem('token');
     setBusyId(id);
     try {
-      const res = await fetch(`${base}/api/admin/purchase-orders/${id}/cancel`, { method: 'POST' });
+      const res = await fetch(`${base}/api/admin/purchase-orders/${id}/cancel`, { 
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        credentials: 'include'
+      });
       const data = await res.json().catch(() => null);
       if (!res.ok) throw new Error(data || 'Failed to cancel');
       setPos(prev => prev.map(p => p.id === id ? data : p));

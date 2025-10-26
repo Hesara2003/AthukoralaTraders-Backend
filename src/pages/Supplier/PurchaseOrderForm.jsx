@@ -14,9 +14,12 @@ export default function SupplierPurchaseOrderForm() {
   const [products, setProducts] = useState([]);
   const [po, setPo] = useState({ supplierId: '', items: [emptyItem()], deliveryDate: '' });
   const [status, setStatus] = useState('CREATED');
+  const [newStatus, setNewStatus] = useState('');
+  const [statusNotes, setStatusNotes] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [updatingStatus, setUpdatingStatus] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -39,6 +42,37 @@ export default function SupplierPurchaseOrderForm() {
   }, [id, editing]);
 
   const canEdit = status === 'CREATED';
+
+  const getAvailableStatusTransitions = () => {
+    const transitions = {
+      'CREATED': ['APPROVED', 'CANCELED'],
+      'APPROVED': ['SHIPPED', 'CANCELED'],
+      'SHIPPED': ['DELIVERED'],
+      'DELIVERED': ['RECEIVED']
+    };
+    return transitions[status] || [];
+  };
+
+  const updateStatus = async () => {
+    if (!newStatus) {
+      alert('Please select a status');
+      return;
+    }
+    if (!confirm(`Update status to ${newStatus}?`)) return;
+    
+    try {
+      setUpdatingStatus(true);
+      const updated = await PoApi.updateStatus(id, newStatus, statusNotes);
+      setStatus(updated.status);
+      setNewStatus('');
+      setStatusNotes('');
+      alert('Status updated successfully!');
+    } catch (e) {
+      alert('Error updating status: ' + e.message);
+    } finally {
+      setUpdatingStatus(false);
+    }
+  };
 
   const onChangeItem = (idx, patch) => {
     setPo(p => ({ ...p, items: p.items.map((it, i) => i === idx ? { ...it, ...patch } : it) }));
@@ -82,10 +116,53 @@ export default function SupplierPurchaseOrderForm() {
             <input type="date" disabled={!canEdit} value={po.deliveryDate || ''} onChange={e => setPo(p => ({ ...p, deliveryDate: e.target.value }))} className="w-full border rounded px-3 py-2"/>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Current Status</label>
             <input value={status} disabled className="w-full border rounded px-3 py-2 bg-gray-50"/>
           </div>
         </div>
+
+        {editing && getAvailableStatusTransitions().length > 0 && (
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <h3 className="text-sm font-semibold text-gray-800 mb-3">Update Delivery Status</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">New Status</label>
+                <select 
+                  value={newStatus} 
+                  onChange={e => setNewStatus(e.target.value)} 
+                  className="w-full border rounded px-3 py-2"
+                  disabled={updatingStatus}
+                >
+                  <option value="">Select status</option>
+                  {getAvailableStatusTransitions().map(s => (
+                    <option key={s} value={s}>{s}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="md:col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1">Notes (Optional)</label>
+                <input 
+                  type="text" 
+                  value={statusNotes} 
+                  onChange={e => setStatusNotes(e.target.value)} 
+                  placeholder="Add any notes about this status change"
+                  className="w-full border rounded px-3 py-2"
+                  disabled={updatingStatus}
+                />
+              </div>
+            </div>
+            <div className="mt-3">
+              <button 
+                type="button" 
+                onClick={updateStatus} 
+                disabled={!newStatus || updatingStatus}
+                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {updatingStatus ? 'Updating...' : 'Update Status'}
+              </button>
+            </div>
+          </div>
+        )}
 
         <div className="bg-white border rounded">
           <div className="border-b px-4 py-2 font-medium">Items</div>

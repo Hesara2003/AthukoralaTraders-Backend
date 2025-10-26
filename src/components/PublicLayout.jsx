@@ -20,47 +20,48 @@ const PublicLayout = ({ children }) => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Top Header Bar */}
-      <div className="bg-gradient-to-r from-blue-900 via-blue-800 to-indigo-900 text-white text-sm relative overflow-hidden">
-        {/* Animated Background Elements */}
-        <div className="absolute inset-0">
-          <div className="absolute -top-2 -left-10 w-20 h-20 bg-white/5 rounded-full blur-xl animate-pulse"></div>
-          <div className="absolute -bottom-2 -right-10 w-16 h-16 bg-purple-300/10 rounded-full blur-lg animate-pulse delay-1000"></div>
-        </div>
-        <div className="container mx-auto px-4 py-2 relative z-10">
+      <div className="bg-blue-900 text-white text-sm shadow-lg">
+        <div className="container mx-auto px-4 py-3">
           <div className="flex justify-between items-center">
-            <div className="flex items-center space-x-6">
+            <div className="flex items-center space-x-8">
               <div className="flex items-center gap-2 hover:text-blue-200 transition-colors duration-300 group">
-                <Phone className="w-3 h-3 group-hover:animate-bounce" />
-                <span className="font-medium">+94 11 234 5678</span>
+                <div className="p-1.5 bg-blue-800 rounded-lg group-hover:bg-blue-700 transition-colors">
+                  <Phone className="w-3.5 h-3.5" />
+                </div>
+                <span className="font-semibold">+94 11 234 5678</span>
               </div>
-              <div className="flex items-center gap-2 hover:text-blue-200 transition-colors duration-300 group">
-                <Mail className="w-3 h-3 group-hover:animate-bounce" />
-                <span className="font-medium">info@athukolaratraders.lk</span>
+              <div className="hidden md:flex items-center gap-2 hover:text-blue-200 transition-colors duration-300 group">
+                <div className="p-1.5 bg-blue-800 rounded-lg group-hover:bg-blue-700 transition-colors">
+                  <Mail className="w-3.5 h-3.5" />
+                </div>
+                <span className="font-semibold">info@athukolaratraders.lk</span>
               </div>
             </div>
             <div className="hidden md:flex items-center gap-2 hover:text-blue-200 transition-colors duration-300 group">
-              <MapPin className="w-3 h-3 group-hover:animate-bounce" />
-              <span className="font-medium">Colombo, Sri Lanka</span>
+              <div className="p-1.5 bg-blue-800 rounded-lg group-hover:bg-blue-700 transition-colors">
+                <MapPin className="w-3.5 h-3.5" />
+              </div>
+              <span className="font-semibold">Colombo, Sri Lanka</span>
             </div>
           </div>
         </div>
       </div>
 
       {/* Main Header */}
-      <header className="bg-white/95 backdrop-blur-md shadow-2xl border-b border-gray-100/50 sticky top-0 z-40 transition-all duration-500">
+      <header className="bg-white shadow-2xl border-b-2 border-gray-100 sticky top-0 z-40">
         <div className="container mx-auto px-4">
-          <div className="flex justify-between items-center h-20">
+          <div className="flex justify-between items-center h-24">
             {/* Logo */}
-            <Link to="/" className="flex items-center space-x-3 group">
+            <Link to="/" className="flex items-center space-x-4 group">
               <div className="relative">
-                <div className="w-12 h-12 bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 rounded-xl flex items-center justify-center transform transition-all duration-300 group-hover:scale-110 group-hover:rotate-3 shadow-lg group-hover:shadow-xl">
-                  <Package className="w-7 h-7 text-white" />
+                <div className="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center transform transition-all duration-300 group-hover:scale-110 group-hover:rotate-3 shadow-xl group-hover:shadow-2xl">
+                  <Package className="w-9 h-9 text-white" />
                 </div>
-                <div className="absolute -inset-1 bg-gradient-to-br from-blue-600 to-indigo-800 rounded-xl blur opacity-30 group-hover:opacity-60 transition-opacity duration-300 pointer-events-none"></div>
+                <div className="absolute -inset-1 bg-blue-600 rounded-2xl blur opacity-30 group-hover:opacity-50 transition-opacity duration-300"></div>
               </div>
-              <div className="transition-all duration-300 group-hover:translate-x-1">
-                <h1 className="text-2xl font-bold text-gray-900 group-hover:text-blue-700 transition-colors duration-300">Athukorala</h1>
-                <p className="text-sm text-gray-600 -mt-1 group-hover:text-gray-700 transition-colors duration-300">Hardware Traders</p>
+              <div className="transition-all duration-300">
+                <h1 className="text-3xl font-extrabold text-gray-900 group-hover:text-blue-600 transition-colors duration-300 tracking-tight">Athukorala</h1>
+                <p className="text-sm text-gray-600 -mt-1 group-hover:text-gray-800 transition-colors duration-300 font-medium">Hardware Traders</p>
               </div>
             </Link>
 
@@ -70,95 +71,79 @@ const PublicLayout = ({ children }) => {
                 <Link
                   key={link.to}
                   to={link.to}
-                  className="relative flex items-center gap-2 px-4 py-2 text-gray-700 hover:text-blue-600 font-medium transition-all duration-300 group rounded-xl hover:bg-blue-50/80"
-                  style={{
-                    animationDelay: `${index * 100}ms`,
-                  }}
+                  className="relative flex items-center gap-2 px-6 py-3 text-gray-700 hover:text-blue-600 font-semibold transition-all duration-300 group rounded-2xl hover:bg-blue-50"
                 >
-                  <link.icon className="w-4 h-4 transition-all duration-300 group-hover:scale-110 group-hover:rotate-12" />
+                  <link.icon className="w-5 h-5 transition-all duration-300 group-hover:scale-110" />
                   <span className="relative">
                     {link.label}
-                    <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-600 to-indigo-600 transition-all duration-300 group-hover:w-full"></span>
+                    <span className="absolute -bottom-1 left-0 w-0 h-1 bg-blue-600 rounded-full transition-all duration-300 group-hover:w-full"></span>
                   </span>
                 </Link>
               ))}
             </nav>
 
             {/* Desktop Actions */}
-            <div className="hidden lg:flex items-center space-x-3">
+            <div className="hidden lg:flex items-center space-x-4">
               <div className="relative group">
                 <CartButton 
                   onClick={() => setIsCartOpen(true)} 
-                  className="text-gray-700 hover:text-blue-600 hover:bg-blue-50/80 p-3 rounded-xl transition-all duration-300 hover:scale-110 hover:shadow-lg" 
+                  className="text-gray-700 hover:text-blue-600 hover:bg-blue-50 p-4 rounded-2xl transition-all duration-300 hover:scale-110 hover:shadow-lg" 
                 />
-                <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl blur opacity-0 group-hover:opacity-20 transition-opacity duration-300 pointer-events-none"></div>
               </div>
-              <div className="relative group">
+              <div className="relative">
                 <Link
                   to="/login"
-                  className="flex items-center gap-2 bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-800 hover:from-blue-700 hover:via-blue-800 hover:to-indigo-900 text-white px-6 py-3 rounded-xl transition-all duration-300 font-medium shadow-lg hover:shadow-xl transform hover:scale-105 hover:-translate-y-0.5 relative z-10"
+                  className="flex items-center gap-3 bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-2xl transition-all duration-300 font-bold shadow-lg hover:shadow-2xl transform hover:scale-105"
                 >
-                  <LogIn className="w-4 h-4 transition-transform duration-300 group-hover:rotate-12" />
+                  <LogIn className="w-5 h-5" />
                   <span>Login</span>
                 </Link>
-                <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-indigo-800 rounded-xl blur opacity-30 group-hover:opacity-60 transition-opacity duration-300 pointer-events-none"></div>
               </div>
             </div>
 
             {/* Mobile Menu Button */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="lg:hidden p-3 text-gray-600 hover:text-blue-600 hover:bg-blue-50/80 rounded-xl transition-all duration-300 hover:scale-110 hover:shadow-lg relative group"
+              className="lg:hidden p-4 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-2xl transition-all duration-300 hover:scale-110"
             >
-              <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl blur opacity-0 group-hover:opacity-20 transition-opacity duration-300 pointer-events-none"></div>
               {isMobileMenuOpen ? 
-                <X className="w-6 h-6 transition-transform duration-300 rotate-90" /> : 
-                <Menu className="w-6 h-6 transition-transform duration-300 group-hover:rotate-180" />
+                <X className="w-7 h-7" /> : 
+                <Menu className="w-7 h-7" />
               }
             </button>
           </div>
 
           {/* Mobile Menu */}
           {isMobileMenuOpen && (
-            <div className="lg:hidden border-t bg-white/95 backdrop-blur-md animate-slideDown">
-              <nav className="py-6 space-y-3">
+            <div className="lg:hidden border-t-2 border-gray-100 bg-white">
+              <nav className="py-6 space-y-2">
                 {navLinks.map((link, index) => (
                   <Link
                     key={link.to}
                     to={link.to}
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="flex items-center gap-3 mx-4 px-4 py-3 text-gray-700 hover:text-blue-600 hover:bg-gradient-to-r hover:from-blue-50/80 hover:to-indigo-50/80 rounded-xl transition-all duration-300 transform hover:scale-102 hover:shadow-lg group"
-                    style={{
-                      animationDelay: `${index * 50}ms`,
-                      animation: 'slideInFromLeft 0.3s ease-out forwards'
-                    }}
+                    className="flex items-center gap-4 mx-4 px-5 py-4 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-2xl transition-all duration-300 font-semibold group"
                   >
-                    <link.icon className="w-5 h-5 transition-all duration-300 group-hover:scale-110 group-hover:rotate-12" />
-                    <span className="font-medium">{link.label}</span>
+                    <link.icon className="w-6 h-6 transition-all duration-300 group-hover:scale-110" />
+                    <span>{link.label}</span>
                   </Link>
                 ))}
-                <div className="mx-4 px-4 pt-4 border-t border-gray-100 flex items-center justify-between gap-3">
-                  <div className="relative group">
-                    <CartButton 
-                      onClick={() => {
-                        setIsCartOpen(true);
-                        setIsMobileMenuOpen(false);
-                      }} 
-                      className="text-gray-700 hover:text-blue-600 hover:bg-blue-50/80 p-3 rounded-xl transition-all duration-300 hover:scale-110" 
-                    />
-                    <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl blur opacity-0 group-hover:opacity-20 transition-opacity duration-300 pointer-events-none"></div>
-                  </div>
-                  <div className="relative group">
-                    <Link
-                      to="/login"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-800 hover:from-blue-700 hover:to-indigo-900 text-white px-6 py-3 rounded-xl transition-all duration-300 font-medium shadow-lg hover:shadow-xl transform hover:scale-105 relative z-10"
-                    >
-                      <LogIn className="w-4 h-4 transition-transform duration-300 group-hover:rotate-12" />
-                      <span>Login</span>
-                    </Link>
-                    <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-indigo-800 rounded-xl blur opacity-30 group-hover:opacity-60 transition-opacity duration-300 pointer-events-none"></div>
-                  </div>
+                <div className="mx-4 px-5 pt-4 border-t-2 border-gray-100 flex items-center justify-between gap-4">
+                  <CartButton 
+                    onClick={() => {
+                      setIsCartOpen(true);
+                      setIsMobileMenuOpen(false);
+                    }} 
+                    className="text-gray-700 hover:text-blue-600 hover:bg-blue-50 p-4 rounded-2xl transition-all duration-300" 
+                  />
+                  <Link
+                    to="/login"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="flex items-center gap-3 bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-2xl transition-all duration-300 font-bold shadow-lg flex-1 justify-center"
+                  >
+                    <LogIn className="w-5 h-5" />
+                    <span>Login</span>
+                  </Link>
                 </div>
               </nav>
             </div>

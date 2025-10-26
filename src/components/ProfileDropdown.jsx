@@ -42,7 +42,7 @@ const ProfileDropdown = () => {
       icon: ShoppingBag,
       label: 'Order History',
       onClick: () => {
-        console.log('Navigate to orders');
+        navigate('/customer/orders');
         setIsOpen(false);
       }
     },

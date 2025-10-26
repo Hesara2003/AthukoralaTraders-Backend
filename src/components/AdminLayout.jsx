@@ -1,7 +1,7 @@
 import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { Package, Percent, LayoutDashboard, LogOut, FileText } from 'lucide-react';
+import { Package, Percent, LayoutDashboard, LogOut, FileText, Users, ClipboardPlus, ShoppingCart, Shield, Truck, Clock, ShoppingBag } from 'lucide-react';
 
 export default function AdminLayout({ title, subtitle, children, actions }) {
   const { user, logout } = useAuth();
@@ -9,9 +9,16 @@ export default function AdminLayout({ title, subtitle, children, actions }) {
 
   const navItems = [
     { to: '/admin/dashboard', label: 'Dashboard', icon: <LayoutDashboard className="h-4 w-4" /> },
+    { to: '/quick-sale', label: 'Quick Sale', icon: <ShoppingCart className="h-4 w-4" /> },
+    { to: '/admin/orders', label: 'Order Management', icon: <ShoppingBag className="h-4 w-4" /> },
     { to: '/admin/products', label: 'Products', icon: <Package className="h-4 w-4" /> },
-  { to: '/admin/promotions', label: 'Promotions', icon: <Percent className="h-4 w-4" /> },
+    { to: '/admin/promotions', label: 'Promotions', icon: <Percent className="h-4 w-4" /> },
     { to: '/admin/invoices', label: 'Invoices', icon: <FileText className="h-4 w-4" /> },
+    { to: '/admin/users', label: 'Users', icon: <Users className="h-4 w-4" /> },
+    { to: '/admin/reports', label: 'Reports', icon: <ClipboardPlus className="h-4 w-4" /> },
+    { to: '/admin/audit-logs', label: 'Audit Logs', icon: <Shield className="h-4 w-4" />, adminOnly: true },
+    { to: '/staff/fulfillment', label: 'Fulfillment', icon: <Truck className="h-4 w-4" /> },
+    { to: '/staff/shifts', label: 'Shift Management', icon: <Clock className="h-4 w-4" /> },
   ];
 
   const linkBase = 'flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors';
