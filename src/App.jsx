@@ -1,7 +1,11 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from "./contexts/AuthContext";
 import { CartProvider } from "./contexts/CartContext";
+import { WishlistProvider } from "./contexts/WishlistContext";
+import { RecentlyViewedProvider } from "./contexts/RecentlyViewedContext";
+import { ProductComparisonProvider } from "./contexts/ProductComparisonContext";
 import PrivateRoute from "./components/PrivateRoute";
 import RoleBasedRoute from "./components/RoleBasedRoute";
 import Login from "./pages/Auth/Login";
@@ -44,13 +48,43 @@ import ReconciliationDashboard from "./pages/Supplier/ReconciliationDashboard";
 import InvoiceMatching from "./pages/Supplier/InvoiceMatching";
 import OrderTrackingPage from "./pages/Customer/OrderTrackingPage";
 import ReturnsRefunds from "./pages/Customer/ReturnsRefunds";
+import WishlistPage from "./pages/Customer/WishlistPage";
 
 function App() {
   return (
     <AuthProvider>
       <CartProvider>
-        <Router>
-          <Routes>
+        <WishlistProvider>
+          <RecentlyViewedProvider>
+            <ProductComparisonProvider>
+              <Router>
+                <Toaster
+                  position="top-right"
+                  toastOptions={{
+                    duration: 3000,
+                    style: {
+                      background: '#fff',
+                      color: '#363636',
+                      padding: '16px',
+                      borderRadius: '12px',
+                      boxShadow: '0 10px 40px rgba(0, 0, 0, 0.15)',
+                      fontWeight: '600',
+                    },
+                    success: {
+                      iconTheme: {
+                        primary: '#10b981',
+                        secondary: '#fff',
+                      },
+                    },
+                    error: {
+                      iconTheme: {
+                        primary: '#ef4444',
+                        secondary: '#fff',
+                      },
+                    },
+                  }}
+                />
+                <Routes>
             {/* ✅ Public Routes - No Authentication Required */}
             <Route path="/" element={<Homepage />} />
             <Route path="/about" element={<AboutPage />} />
@@ -130,6 +164,16 @@ function App() {
             element={
               <PrivateRoute>
                 <ReturnsRefunds />
+              </PrivateRoute>
+            } 
+          />
+
+          {/* Wishlist */}
+          <Route 
+            path="/customer/wishlist" 
+            element={
+              <PrivateRoute>
+                <WishlistPage />
               </PrivateRoute>
             } 
           />
@@ -387,6 +431,9 @@ function App() {
           <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
         </Routes>
       </Router>
+            </ProductComparisonProvider>
+          </RecentlyViewedProvider>
+        </WishlistProvider>
       </CartProvider>
     </AuthProvider>
   );

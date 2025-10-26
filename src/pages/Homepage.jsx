@@ -3,15 +3,23 @@ import { Link, useNavigate } from 'react-router-dom';
 import { ArrowRight, Star, Package, Users, Award, TrendingUp, ShoppingCart, Eye, Plus, ChevronLeft, ChevronRight, Truck, Shield, HeadphonesIcon, Clock, CheckCircle, Wrench, Hammer, Zap, ThumbsUp } from 'lucide-react';
 import { CustomerProductApi } from '../utils/customerProductApi';
 import { useCart } from '../contexts/CartContext';
+import { useRecentlyViewed } from '../contexts/RecentlyViewedContext';
 import PublicLayout from '../components/PublicLayout';
+import ScrollReveal from '../components/ScrollReveal';
+import LoadingSpinner from '../components/LoadingSpinner';
+import RecentlyViewedSection from '../components/RecentlyViewedSection';
+import ProductQuickView from '../components/ProductQuickView';
+import EnhancedProductCard from '../components/EnhancedProductCard';
 
 const Homepage = () => {
   const navigate = useNavigate();
   const { addToCart, canAddToCart } = useCart();
+  const { recentlyViewed } = useRecentlyViewed();
   const [featuredProducts, setFeaturedProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [categories, setCategories] = useState([]);
   const [discountData, setDiscountData] = useState(new Map());
+  const [quickViewProduct, setQuickViewProduct] = useState(null);
   const [currentHeroSlide, setCurrentHeroSlide] = useState(0);
   const [currentBannerSlide, setCurrentBannerSlide] = useState(0);
   const [currentProductSlide, setCurrentProductSlide] = useState(0);
@@ -332,7 +340,8 @@ const Homepage = () => {
       </section>
 
       {/* Stats Section */}
-      <section className="py-20 bg-white border-b-2 border-gray-100 relative overflow-hidden">
+      <ScrollReveal>
+        <section className="py-20 bg-white border-b-2 border-gray-100 relative overflow-hidden">
         {/* Background Decoration */}
         <div className="absolute top-0 left-0 w-full h-1 bg-blue-600"></div>
         
@@ -359,6 +368,7 @@ const Homepage = () => {
           </div>
         </div>
       </section>
+      </ScrollReveal>
 
       {/* Featured Products Carousel */}
       <section className="py-24 bg-gray-50 relative overflow-hidden">
@@ -398,72 +408,19 @@ const Homepage = () => {
               style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
             >
               {loading ? (
-                Array.from({ length: 4 }).map((_, index) => (
-                  <div key={index} className="flex-shrink-0 w-80 bg-white rounded-3xl border-2 border-gray-100 p-6 animate-pulse shadow-lg">
-                    <div className="h-64 bg-gray-200 rounded-2xl mb-4" />
-                    <div className="h-5 bg-gray-200 rounded w-3/4 mb-3" />
-                    <div className="h-4 bg-gray-200 rounded w-1/2" />
-                  </div>
-                ))
+                <LoadingSpinner text="Loading featured products..." />
               ) : (
-                featuredProducts.map((product) => {
+                featuredProducts.map((product, index) => {
                   const discountInfo = getDiscountInfo(product);
-                  const price = discountInfo.hasDiscount ? discountInfo.discountedPrice : product.price;
                   return (
-                    <div key={product.id} className="flex-shrink-0 w-80 bg-white rounded-3xl border-2 border-gray-200 hover:border-blue-500 hover:shadow-2xl transition-all duration-500 group relative overflow-hidden">
-                      {/* Decorative corner accent */}
-                      <div className="absolute top-0 right-0 w-20 h-20 bg-blue-600 opacity-0 group-hover:opacity-10 transition-opacity duration-500 rounded-bl-full"></div>
-                      
-                      <div className="p-7">
-                        <div className="relative aspect-square bg-gray-50 rounded-2xl mb-6 overflow-hidden border-2 border-gray-100 group-hover:border-blue-300 transition-all duration-500">
-                          {product.images && product.images.length > 0 ? (
-                            <img 
-                              src={`http://localhost:8080/api/files/products/${product.images[0]}`}
-                              alt={product.name}
-                              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                            />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center bg-blue-50">
-                              <Package className="w-24 h-24 text-blue-300 group-hover:text-blue-400 transition-colors" />
-                            </div>
-                          )}
-                          {discountInfo.hasDiscount && (
-                            <div className="absolute top-3 right-3 bg-red-600 text-white text-sm font-black px-5 py-2 rounded-xl shadow-2xl animate-pulse">
-                              -{discountInfo.discountPercent}%
-                            </div>
-                          )}
-                          <div className="absolute bottom-3 left-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-y-2 group-hover:translate-y-0">
-                            <button
-                              onClick={() => navigate(`/products/${product.id}`)}
-                              className="flex-1 py-2 bg-white text-gray-900 rounded-xl hover:bg-gray-100 transition-all duration-300 font-semibold shadow-lg text-sm flex items-center justify-center gap-2"
-                            >
-                              <Eye className="w-4 h-4" />
-                              View
-                            </button>
-                            <button
-                              onClick={() => handleAddToCart(product)}
-                              className="flex-1 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all duration-300 font-bold shadow-lg text-sm flex items-center justify-center gap-2"
-                            >
-                              <ShoppingCart className="w-4 h-4" />
-                              Add
-                            </button>
-                          </div>
-                        </div>
-                        <h3 className="font-bold text-xl text-gray-900 mb-3 line-clamp-2 group-hover:text-blue-600 transition-colors min-h-[3.5rem]">{product.name}</h3>
-                        <div className="flex items-baseline gap-3 mb-6">
-                          <span className="heading text-3xl font-black text-blue-600">Rs. {price?.toFixed(2)}</span>
-                          {discountInfo.hasDiscount && (
-                            <span className="text-lg text-gray-400 line-through font-medium">Rs. {product.price?.toFixed(2)}</span>
-                          )}
-                        </div>
-                        <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                          <span className="text-sm text-gray-600 font-medium flex items-center gap-2">
-                            <Package className="w-4 h-4" />
-                            {product.stock} in stock
-                          </span>
-                          <ThumbsUp className="w-5 h-5 text-gray-400 group-hover:text-blue-600 transition-colors" />
-                        </div>
-                      </div>
+                    <div key={product.id} className="flex-shrink-0 w-80">
+                      <ScrollReveal delay={index * 0.05}>
+                        <EnhancedProductCard
+                          product={product}
+                          discountInfo={discountInfo}
+                          onQuickView={setQuickViewProduct}
+                        />
+                      </ScrollReveal>
                     </div>
                   );
                 })
@@ -982,6 +939,17 @@ const Homepage = () => {
           </div>
         </div>
       </section>
+
+      {/* Recently Viewed Section */}
+      {recentlyViewed.length > 0 && <RecentlyViewedSection />}
+
+      {/* Quick View Modal */}
+      <ProductQuickView
+        product={quickViewProduct}
+        isOpen={!!quickViewProduct}
+        onClose={() => setQuickViewProduct(null)}
+        getDiscountInfo={getDiscountInfo}
+      />
     </PublicLayout>
   );
 };

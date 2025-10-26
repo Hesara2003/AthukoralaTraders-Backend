@@ -4,6 +4,7 @@ import { Search, ShoppingCart, Menu, X, Phone, Mail, MapPin, User, LogIn, Packag
 import { useCart } from '../contexts/CartContext';
 import CartButton from './CartButton';
 import ShoppingCartModal from './ShoppingCartModal';
+import FloatingActionButtons from './FloatingActionButtons';
 
 const PublicLayout = ({ children }) => {
   const navigate = useNavigate();
@@ -250,6 +251,9 @@ const PublicLayout = ({ children }) => {
 
       {/* Shopping Cart Modal */}
       <ShoppingCartModal isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
+      
+      {/* Floating Action Buttons */}
+      <FloatingActionButtons />
 
       {/* Custom CSS for animations */}
       <style jsx>{`

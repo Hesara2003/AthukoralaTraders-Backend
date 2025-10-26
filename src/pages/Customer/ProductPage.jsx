@@ -1,30 +1,50 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Filter, Grid, List, ShoppingCart, Eye, Package, X, ChevronDown, ChevronUp, Star, TrendingUp, DollarSign, Plus, AlertTriangle } from 'lucide-react';
+import { Search, Filter, Grid, List, ShoppingCart, Eye, Package, X, ChevronDown, ChevronUp, Star, TrendingUp, DollarSign, Plus, AlertTriangle, Heart } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 // Use mock API for offline development
 import { AdminProductApi } from '../../utils/adminProductApi';
 import { CustomerProductApi } from '../../utils/customerProductApi';
 import { useCart } from '../../contexts/CartContext';
+import { useWishlist } from '../../contexts/WishlistContext';
+import { useRecentlyViewed } from '../../contexts/RecentlyViewedContext';
+import { useProductComparison } from '../../contexts/ProductComparisonContext';
 import CartButton from '../../components/CartButton';
 import ShoppingCartModal from '../../components/ShoppingCartModal';
 import PublicLayout from '../../components/PublicLayout';
 import CustomerLayout from '../../components/CustomerLayout';
+import EnhancedProductCard from '../../components/EnhancedProductCard';
+import ProductQuickView from '../../components/ProductQuickView';
+import ProductFilters from '../../components/ProductFilters';
+import LoadingSpinner from '../../components/LoadingSpinner';
+import ScrollReveal from '../../components/ScrollReveal';
+import toast from 'react-hot-toast';
 
 const ProductBrowsePage = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
-    const { 
+  const { 
     addToCart, 
     getCartItemQuantity, 
     isInCart,
     canAddToCart,
     getAvailableQuantity
   } = useCart();
+  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+  const { addToRecentlyViewed } = useRecentlyViewed();
+  const { addToComparison, isInComparison } = useProductComparison();
   const [notification, setNotification] = useState(null);
+  const [quickViewProduct, setQuickViewProduct] = useState(null);
 
   // Show notification temporarily
   const showNotification = (message, type = 'success') => {
+    if (type === 'error') {
+      toast.error(message);
+    } else if (type === 'warning') {
+      toast(message, { icon: '⚠️' });
+    } else {
+      toast.success(message);
+    }
     setNotification({ message, type });
     setTimeout(() => setNotification(null), 3000);
   };
@@ -1237,8 +1257,8 @@ const ProductCard = ({ product }) => {
             </div>
 
             {loading ? (
-              <div className={viewMode === 'grid' ? `grid grid-cols-1 md:grid-cols-2 ${gridCols === 4 ? 'lg:grid-cols-4' : 'lg:grid-cols-3'} gap-5` : "space-y-4"}>
-                {Array.from({ length: 6 }).map((_, i) => (<SkeletonCard key={i} />))}
+              <div className="flex items-center justify-center py-20">
+                <LoadingSpinner text="Loading products..." />
               </div>
             ) : filteredProducts.length === 0 ? (
               <div className="text-center py-16 bg-white rounded-2xl border-2 border-gray-200 shadow-xl">
@@ -1252,9 +1272,36 @@ const ProductCard = ({ product }) => {
                 )}
               </div>
             ) : (
-              <div className={viewMode === 'grid' ? `grid grid-cols-1 md:grid-cols-2 ${gridCols === 4 ? 'lg:grid-cols-4' : 'lg:grid-cols-3'} gap-5` : "space-y-4"}>
-                {filteredProducts.map(product => (viewMode === 'grid' ? (<ProductCard key={product.id} product={product} />) : (<ProductListItem key={product.id} product={product} />)))}
-              </div>
+              <>
+                <ScrollReveal direction="up">
+                  <div className={viewMode === 'grid' ? `grid grid-cols-1 md:grid-cols-2 ${gridCols === 4 ? 'lg:grid-cols-4' : 'lg:grid-cols-3'} gap-5` : "space-y-4"}>
+                    {filteredProducts.map(product => (
+                      viewMode === 'grid' ? (
+                        <EnhancedProductCard 
+                          key={product.id} 
+                          product={product}
+                          onQuickView={() => setQuickViewProduct(product)}
+                          onAddToCart={(prod) => handleAddToCart(prod, 1)}
+                          onToggleWishlist={(prod) => {
+                            if (isInWishlist(prod.id)) {
+                              removeFromWishlist(prod.id);
+                            } else {
+                              addToWishlist(prod);
+                            }
+                          }}
+                          onToggleComparison={(prod) => {
+                            addToComparison(prod);
+                          }}
+                          isInWishlist={isInWishlist(product.id)}
+                          isInComparison={isInComparison(product.id)}
+                        />
+                      ) : (
+                        <ProductListItem key={product.id} product={product} />
+                      )
+                    ))}
+                  </div>
+                </ScrollReveal>
+              </>
             )}
           </div>
           </div>
@@ -1263,6 +1310,16 @@ const ProductCard = ({ product }) => {
 
       {/* Shopping Cart Modal */}
       <ShoppingCartModal isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
+      
+      {/* Quick View Modal */}
+      {quickViewProduct && (
+        <ProductQuickView
+          product={quickViewProduct}
+          isOpen={!!quickViewProduct}
+          onClose={() => setQuickViewProduct(null)}
+          onAddToCart={handleAddToCart}
+        />
+      )}
     </Layout>
   );
 };
