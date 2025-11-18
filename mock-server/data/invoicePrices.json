@@ -1,0 +1,10 @@
+[
+  {
+    "supplierPrice": 120.5,
+    "invoiceNumber": "INV-SELFTEST",
+    "invoiceId": "selftest-invoice",
+    "updatedAt": "2025-11-18T18:21:51.742Z",
+    "createdAt": "2025-11-18T18:21:51.737Z",
+    "invoicePrice": 140.75
+  }
+]

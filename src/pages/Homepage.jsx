@@ -30,6 +30,7 @@ const Homepage = () => {
   const [currentHeroSlide, setCurrentHeroSlide] = useState(0);
   const [currentBannerSlide, setCurrentBannerSlide] = useState(0);
   const [currentProductSlide, setCurrentProductSlide] = useState(0);
+  const [currentTestimonialSlide, setCurrentTestimonialSlide] = useState(0);
   // brands list used for the brands carousel (rendered twice for seamless looping)
   const brands = [
     { src: 'https://www.google.com/url?sa=i&url=https%3A%2F%2Fcommons.wikimedia.org%2Fwiki%2FFile%3ABosch-logo.svg&psig=AOvVaw2EkMoxduAgPhtQFZWONpwH&ust=1761378839411000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCIik09GtvJADFQAAAAAdAAAAABAE', alt: 'Bosch' },

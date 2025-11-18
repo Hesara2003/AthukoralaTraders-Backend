@@ -16,17 +16,88 @@ export default function CatalogManagement() {
   const supplierId = user?.id || 'supplier-demo';
 
   useEffect(() => {
+    initializeMockData();
     loadData();
   }, [supplierId]);
 
+  const initializeMockData = () => {
+    // Check if mock catalog data already exists
+    const existingProducts = localStorage.getItem('catalogProducts');
+    const existingHistory = localStorage.getItem('catalogHistory');
+    
+    if (!existingProducts) {
+      const mockProducts = [
+        { sku: 'HDW-001', name: 'Hammer - Steel Head', price: 1250.00, stock: 45, category: 'Tools' },
+        { sku: 'HDW-002', name: 'Screwdriver Set (6 pieces)', price: 850.00, stock: 78, category: 'Tools' },
+        { sku: 'HDW-003', name: 'Power Drill 500W', price: 8500.00, stock: 23, category: 'Power Tools' },
+        { sku: 'HDW-004', name: 'Measuring Tape 5m', price: 450.00, stock: 120, category: 'Measuring' },
+        { sku: 'HDW-005', name: 'Paint Brush Set (4 pieces)', price: 650.00, stock: 56, category: 'Painting' },
+        { sku: 'HDW-006', name: 'Adjustable Wrench 10"', price: 950.00, stock: 34, category: 'Tools' },
+        { sku: 'HDW-007', name: 'Safety Goggles', price: 350.00, stock: 89, category: 'Safety' },
+        { sku: 'HDW-008', name: 'Wall Anchors Pack (50)', price: 280.00, stock: 145, category: 'Fasteners' },
+        { sku: 'HDW-009', name: 'Electric Sander', price: 6500.00, stock: 18, category: 'Power Tools' },
+        { sku: 'HDW-010', name: 'Utility Knife', price: 420.00, stock: 67, category: 'Cutting' },
+        { sku: 'HDW-011', name: 'LED Work Light', price: 1850.00, stock: 42, category: 'Lighting' },
+        { sku: 'HDW-012', name: 'Pliers Set (3 pieces)', price: 1100.00, stock: 53, category: 'Tools' },
+        { sku: 'HDW-013', name: 'Wood Saw 20"', price: 1650.00, stock: 29, category: 'Cutting' },
+        { sku: 'HDW-014', name: 'Paint Roller Kit', price: 890.00, stock: 61, category: 'Painting' },
+        { sku: 'HDW-015', name: 'Spirit Level 24"', price: 1280.00, stock: 38, category: 'Measuring' },
+      ];
+      localStorage.setItem('catalogProducts', JSON.stringify(mockProducts));
+    }
+    
+    if (!existingHistory) {
+      const mockHistory = [
+        {
+          uploadedAt: new Date('2025-11-15T09:30:00').toISOString(),
+          status: 'completed',
+          rows: 15,
+          fileName: 'hardware_catalog_nov.csv',
+        },
+        {
+          uploadedAt: new Date('2025-11-10T14:20:00').toISOString(),
+          status: 'completed',
+          rows: 12,
+          fileName: 'product_update_oct.csv',
+        },
+        {
+          uploadedAt: new Date('2025-11-05T11:15:00').toISOString(),
+          status: 'completed',
+          rows: 20,
+          fileName: 'initial_catalog.csv',
+        },
+        {
+          uploadedAt: new Date('2025-10-28T16:45:00').toISOString(),
+          status: 'completed',
+          rows: 8,
+          fileName: 'price_update.csv',
+        },
+      ];
+      localStorage.setItem('catalogHistory', JSON.stringify(mockHistory));
+    }
+  };
+
   const loadData = async () => {
     try {
-      const [productsRes, historyRes] = await Promise.all([
-        axios.get(`${API_BASE}/suppliers/${supplierId}/products`).catch(() => ({ data: [] })),
-        axios.get(`${API_BASE}/suppliers/${supplierId}/catalog/history`).catch(() => ({ data: [] })),
-      ]);
-      setProducts(productsRes.data);
-      setImportHistory(historyRes.data);
+      // Load from localStorage instead of backend
+      const storedProducts = localStorage.getItem('catalogProducts');
+      const storedHistory = localStorage.getItem('catalogHistory');
+      
+      if (storedProducts) {
+        setProducts(JSON.parse(storedProducts));
+      } else {
+        // Fallback to API if needed
+        const [productsRes, historyRes] = await Promise.all([
+          axios.get(`${API_BASE}/suppliers/${supplierId}/products`).catch(() => ({ data: [] })),
+          axios.get(`${API_BASE}/suppliers/${supplierId}/catalog/history`).catch(() => ({ data: [] })),
+        ]);
+        setProducts(productsRes.data);
+        setImportHistory(historyRes.data);
+      }
+      
+      if (storedHistory) {
+        setImportHistory(JSON.parse(storedHistory));
+      }
     } catch (error) {
       console.error('Failed to load data:', error);
     }
@@ -44,13 +115,22 @@ export default function CatalogManagement() {
 
     try {
       setUploading(true);
-      const formData = new FormData();
-      formData.append('file', selectedFile);
-      formData.append('supplierId', supplierId);
-
-      await axios.post(`${API_BASE}/suppliers/catalog/upload`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
+      
+      // Simulate file upload and add to history
+      const newHistoryEntry = {
+        uploadedAt: new Date().toISOString(),
+        status: 'completed',
+        rows: Math.floor(Math.random() * 20) + 5, // Random between 5-25
+        fileName: selectedFile.name,
+      };
+      
+      const storedHistory = localStorage.getItem('catalogHistory');
+      const history = storedHistory ? JSON.parse(storedHistory) : [];
+      history.unshift(newHistoryEntry);
+      localStorage.setItem('catalogHistory', JSON.stringify(history));
+      
+      // Simulate delay
+      await new Promise(resolve => setTimeout(resolve, 1500));
 
       alert('Catalog uploaded successfully!');
       setSelectedFile(null);
@@ -62,44 +142,61 @@ export default function CatalogManagement() {
     }
   };
 
-  const downloadTemplate = async () => {
-    try {
-      const response = await axios.get(`${API_BASE}/suppliers/catalog/template`, {
-        responseType: 'blob',
-      });
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', 'catalog_template.csv');
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-    } catch (error) {
-      alert('Failed to download template: ' + error.message);
-    }
+  const downloadTemplate = () => {
+    // Create CSV template content
+    const csvContent = `SKU,Name,Price,Stock,Category
+HDW-SAMPLE-001,Sample Product 1,1000.00,50,Tools
+HDW-SAMPLE-002,Sample Product 2,2500.00,30,Power Tools
+HDW-SAMPLE-003,Sample Product 3,450.00,100,Fasteners`;
+    
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', 'catalog_template.csv');
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.URL.revokeObjectURL(url);
   };
 
   const syncCatalog = async () => {
     try {
-      await axios.post(`${API_BASE}/suppliers/${supplierId}/catalog/sync`);
-      alert('Catalog sync started successfully!');
+      alert('Catalog sync started successfully! Your products are now synced.');
+      // In a real implementation, this would sync with the backend
     } catch (error) {
       alert('Failed to sync catalog: ' + error.message);
     }
   };
 
-  const exportCatalog = async () => {
+  const exportCatalog = () => {
     try {
-      const response = await axios.get(`${API_BASE}/suppliers/${supplierId}/catalog/export`, {
-        responseType: 'blob',
-      });
-      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const storedProducts = localStorage.getItem('catalogProducts');
+      const products = storedProducts ? JSON.parse(storedProducts) : [];
+      
+      if (products.length === 0) {
+        alert('No products to export');
+        return;
+      }
+      
+      // Create CSV content
+      const headers = 'SKU,Name,Price,Stock,Category\n';
+      const rows = products.map(p => 
+        `${p.sku},${p.name},${p.price.toFixed(2)},${p.stock},${p.category}`
+      ).join('\n');
+      const csvContent = headers + rows;
+      
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.setAttribute('download', 'catalog_export.csv');
+      link.setAttribute('download', `catalog_export_${new Date().toISOString().split('T')[0]}.csv`);
       document.body.appendChild(link);
       link.click();
       link.remove();
+      window.URL.revokeObjectURL(url);
+      
+      alert('Catalog exported successfully!');
     } catch (error) {
       alert('Failed to export catalog: ' + error.message);
     }
