@@ -50,6 +50,7 @@ import InvoiceMatching from "./pages/Supplier/InvoiceMatching";
 import OrderTrackingPage from "./pages/Customer/OrderTrackingPage";
 import ReturnsRefunds from "./pages/Customer/ReturnsRefunds";
 import WishlistPage from "./pages/Customer/WishlistPage";
+import APIDebugger from "./components/APIDebugger";
 
 function App() {
   return (
@@ -95,6 +96,7 @@ function App() {
             <Route path="/search-demo" element={<SearchDemo />} />
             <Route path="/delivery-timeline-demo" element={<DeliveryTimelineDemo />} />
             <Route path="/api-test" element={<ApiTestPage />} />
+            <Route path="/api-debug" element={<APIDebugger />} />
             
             {/* Order Tracking - Public */}
             <Route path="/track-order" element={<OrderTrackingPage />} />
