@@ -1,14 +1,23 @@
 import React, { useEffect, useRef, useState } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 
+export interface TimelineEntry {
+  title: string;
+  content: React.ReactNode;
+}
+
+interface TimelineProps {
+  data: TimelineEntry[];
+}
+
 /**
  * Animated timeline component that reveals progress as the user scrolls.
  * Accepts an array of entries containing a title and arbitrary content nodes.
  */
-export const Timeline = ({ data = [] }) => {
-  const ref = useRef(null);
-  const containerRef = useRef(null);
-  const [height, setHeight] = useState(0);
+export const Timeline = ({ data = [] }: TimelineProps) => {
+  const ref = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [height, setHeight] = useState<number>(0);
 
   useEffect(() => {
     if (!ref.current) return;
