@@ -15,7 +15,8 @@ dist-ssr
 # Environment variables
 .env
 .env.local
-.env.production
+# Note: .env.production is committed for deployment
+# .env.production
 
 # Editor directories and files
 .vscode/*
