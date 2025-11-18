@@ -3,9 +3,6 @@
 const API_BASE = import.meta.env.VITE_API_BASE || 'https://athukorala-traders-backend.onrender.com';
 const PRODUCTS_PUBLIC = `${API_BASE}/api/products`;
 
-// Import mock data as fallback
-import { mockProducts } from './mockProductApi.js';
-
 // Log the configuration for debugging
 console.log('CustomerProductApi Configuration:', {
   VITE_API_BASE: import.meta.env.VITE_API_BASE,
@@ -14,10 +11,84 @@ console.log('CustomerProductApi Configuration:', {
   mode: import.meta.env.MODE
 });
 
+// Inline mock data for CORS fallback
+const mockProductData = [
+  {
+    id: "1",
+    name: "Professional Hammer Set",
+    description: "High-quality hammer set perfect for construction and carpentry work. Includes 3 different sizes.",
+    price: 45.99,
+    category: "Tools",
+    subcategory: "Hand Tools", 
+    sku: "HAM-001",
+    inStock: true,
+    stockQuantity: 25,
+    imageUrl: "/images/category-tools.svg",
+    manufacturer: "BuildPro",
+    brand: "BuildPro"
+  },
+  {
+    id: "2", 
+    name: "Electric Drill Kit",
+    description: "Professional electric drill with multiple bits and carrying case. Perfect for drilling and screwing.",
+    price: 129.99,
+    category: "Tools",
+    subcategory: "Power Tools",
+    sku: "DRL-002", 
+    inStock: true,
+    stockQuantity: 15,
+    imageUrl: "/images/category-tools.svg",
+    manufacturer: "PowerMax",
+    brand: "PowerMax"
+  },
+  {
+    id: "3",
+    name: "LED Work Light",
+    description: "Bright LED work light with adjustable stand. Perfect for construction and repair work.",
+    price: 67.50,
+    category: "Electrical",
+    subcategory: "Lighting",
+    sku: "LED-003",
+    inStock: true,
+    stockQuantity: 30,
+    imageUrl: "/images/category-electrical.svg",
+    manufacturer: "BrightTech",
+    brand: "BrightTech"
+  },
+  {
+    id: "4",
+    name: "Extension Cord 25ft",
+    description: "Heavy-duty outdoor extension cord, 25 feet long. Weather-resistant and durable.",
+    price: 32.50,
+    category: "Electrical",
+    subcategory: "Cables",
+    sku: "EXT-004",
+    inStock: true,
+    stockQuantity: 40,
+    imageUrl: "/images/category-electrical.svg",
+    manufacturer: "PowerLink",
+    brand: "PowerLink"
+  },
+  {
+    id: "5",
+    name: "Safety Helmet",
+    description: "ANSI-approved safety helmet with adjustable suspension. Essential for construction work.",
+    price: 28.75,
+    category: "Safety",
+    subcategory: "Head Protection",
+    sku: "SAF-005",
+    inStock: true,
+    stockQuantity: 50,
+    imageUrl: "/images/category-safety.svg",
+    manufacturer: "SafeGuard",
+    brand: "SafeGuard"
+  }
+];
+
 // Mock data fallback function for CORS issues
 function getMockProductData() {
   console.log('🔄 Using mock data due to CORS restrictions');
-  return mockProducts.slice(0, 10); // Return first 10 products
+  return mockProductData; 
 }
 
 async function handle(res) {
