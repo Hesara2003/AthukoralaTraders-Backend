@@ -1,5 +1,9 @@
 # Athukorala Traders Frontend
 
+## Production Deployment
+- **Frontend**: https://athukorala-traders-frontend.vercel.app
+- **Backend**: https://athukorala-traders-backend.onrender.com
+
 ## Supplier Portal (SCRUM-14, SCRUM-34)
 
 Purchase Orders were moved from the Admin area to the Supplier portal.
