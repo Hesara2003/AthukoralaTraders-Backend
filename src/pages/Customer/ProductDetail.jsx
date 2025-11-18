@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link, useLocation } from 'react-router-dom';
+import { ProductCard } from '../../components/ui/product-card-1';
 import { useAuth } from '../../contexts/AuthContext';
 import { useCart } from '../../contexts/CartContext';
 import PublicLayout from '../../components/PublicLayout';
@@ -675,33 +676,23 @@ const ProductDetail = () => {
                   const pid = getPid(relatedProduct);
                   const key = pid ?? `related-${idx}`;
                   return (
-                  <div key={key} className="bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 group">
-                    <div className="aspect-square bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
-                      <Package className="h-16 w-16 text-gray-300 group-hover:text-gray-400 transition-colors" />
-                    </div>
-                    <div className="p-6">
-                      <h4 className="font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors">{relatedProduct.name}</h4>
-                      <p className="text-sm text-gray-500 mb-4 bg-gray-100 px-2 py-1 rounded-full inline-block">{relatedProduct.category}</p>
-                      <div className="flex items-center justify-between">
-                        <span className="text-xl font-bold bg-gradient-to-r from-green-600 to-green-500 bg-clip-text text-transparent">
-                          {relatedProduct.discountPercent != null && relatedProduct.discountedPrice != null && relatedProduct.discountedPrice < relatedProduct.price ? (
-                            <span>
-                              ${parseFloat(relatedProduct.discountedPrice).toFixed(2)}
-                              <span className="ml-2 text-sm font-semibold text-gray-400 line-through">${parseFloat(relatedProduct.price).toFixed(2)}</span>
-                            </span>
-                          ) : (
-                            `$${parseFloat(relatedProduct.price).toFixed(2)}`
-                          )}
-                        </span>
-                        <button
-                          onClick={() => pid && navigate(`/products/${pid}`)}
-                          className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-4 py-2 rounded-lg font-medium transition-all duration-200 transform hover:scale-105"
-                        >
-                          View
-                        </button>
-                      </div>
-                    </div>
-                  </div>
+                    <ProductCard
+                      key={key}
+                      name={relatedProduct.name}
+                      price={relatedProduct.discountedPrice && relatedProduct.discountedPrice < relatedProduct.price ? relatedProduct.discountedPrice : relatedProduct.price}
+                      originalPrice={relatedProduct.discountedPrice && relatedProduct.discountedPrice < relatedProduct.price ? relatedProduct.price : null}
+                      rating={relatedProduct.rating || 4.5}
+                      reviewCount={relatedProduct.reviewCount || 0}
+                      images={relatedProduct.images?.map(img => `http://localhost:8080/api/files/products/${img}`) || []}
+                      brands={relatedProduct.brands || []}
+                      specifications={relatedProduct.specifications || []}
+                      isNew={relatedProduct.isNew || false}
+                      isBestSeller={relatedProduct.isBestSeller || false}
+                      discount={relatedProduct.discountPercent || 0}
+                      freeShipping={relatedProduct.freeShipping || false}
+                      inStock={relatedProduct.stockQuantity > 0}
+                      onAddToCart={() => {}}
+                    />
                   );
                 })}
               </div>

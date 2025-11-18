@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Heart, ShoppingCart, Trash2, Package } from 'lucide-react';
+import { ProductCard } from '../../components/ui/product-card-1';
 import { useWishlist } from '../../contexts/WishlistContext';
 import { useCart } from '../../contexts/CartContext';
 import { useNavigate } from 'react-router-dom';
@@ -83,82 +84,22 @@ const WishlistPage = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {wishlist.map((product, index) => (
                 <ScrollReveal key={product.id} delay={index * 0.05}>
-                  <motion.div
-                    layout
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.9 }}
-                    className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all group"
-                  >
-                    {/* Image */}
-                    <div
-                      className="relative aspect-square bg-gray-100 cursor-pointer overflow-hidden"
-                      onClick={() => navigate(`/products/${product.id}`)}
-                    >
-                      {product.images && product.images.length > 0 ? (
-                        <img
-                          src={`http://localhost:8080/api/files/products/${product.images[0]}`}
-                          alt={product.name}
-                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center">
-                          <Package className="w-20 h-20 text-gray-300" />
-                        </div>
-                      )}
-
-                      {/* Remove Button */}
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          removeFromWishlist(product.id);
-                        }}
-                        className="absolute top-3 right-3 p-2 bg-white/90 backdrop-blur-sm rounded-full shadow-lg hover:bg-red-50 hover:text-red-600 transition-all group/btn"
-                      >
-                        <Trash2 className="w-5 h-5" />
-                      </button>
-                    </div>
-
-                    {/* Content */}
-                    <div className="p-5">
-                      <h3
-                        className="font-bold text-lg text-gray-900 mb-2 line-clamp-2 hover:text-blue-600 transition-colors cursor-pointer min-h-[3.5rem]"
-                        onClick={() => navigate(`/products/${product.id}`)}
-                      >
-                        {product.name}
-                      </h3>
-                      <div className="flex items-baseline gap-2 mb-4">
-                        <span className="text-2xl font-black text-blue-600">
-                          Rs. {product.price?.toFixed(2)}
-                        </span>
-                      </div>
-
-                      {/* Stock Status */}
-                      <div className="mb-4">
-                        {product.stock > 0 ? (
-                          <div className="flex items-center gap-2 text-green-600 text-sm font-semibold">
-                            <div className="w-2 h-2 bg-green-600 rounded-full animate-pulse" />
-                            In Stock
-                          </div>
-                        ) : (
-                          <div className="flex items-center gap-2 text-red-600 text-sm font-semibold">
-                            <div className="w-2 h-2 bg-red-600 rounded-full" />
-                            Out of Stock
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Actions */}
-                      <button
-                        onClick={() => handleAddToCart(product)}
-                        disabled={product.stock === 0}
-                        className="w-full py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition-all disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg"
-                      >
-                        <ShoppingCart className="w-5 h-5" />
-                        Add to Cart
-                      </button>
-                    </div>
-                  </motion.div>
+                  <ProductCard
+                    name={product.name}
+                    price={product.discountedPrice && product.discountedPrice < product.price ? product.discountedPrice : product.price}
+                    originalPrice={product.discountedPrice && product.discountedPrice < product.price ? product.price : null}
+                    rating={product.rating || 4.5}
+                    reviewCount={product.reviewCount || 0}
+                    images={product.images?.map(img => `http://localhost:8080/api/files/products/${img}`) || []}
+                    brands={product.brands || []}
+                    specifications={product.specifications || []}
+                    isNew={product.isNew || false}
+                    isBestSeller={product.isBestSeller || false}
+                    discount={product.discountPercent || 0}
+                    freeShipping={product.freeShipping || false}
+                    inStock={product.stockQuantity > 0}
+                    onAddToCart={() => handleAddToCart(product)}
+                  />
                 </ScrollReveal>
               ))}
             </div>

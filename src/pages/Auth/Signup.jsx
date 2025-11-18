@@ -1,84 +1,34 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { User, Mail, Lock, Shield, AlertCircle, Loader2, UserPlus, Eye, EyeOff, Check, Star } from "lucide-react";
-import GoogleOAuthButton from "../../components/GoogleOAuthButton";
-import AuthLayout from "../../components/AuthLayout";
-
-const InputField = ({ icon: Icon, label, error, type = "text", showPassword, onTogglePassword, ...props }) => (
-  <div className="space-y-2">
-    <label className="block text-sm font-semibold text-gray-700 mb-2">
-      {label}
-    </label>
-    <div className="relative group">
-      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-        <Icon className={`h-5 w-5 transition-colors duration-200 ${
-          error 
-            ? 'text-red-500' 
-            : 'text-gray-400 group-focus-within:text-blue-600'
-        }`} />
-      </div>
-      <input
-        type={type}
-        {...props}
-        className={`
-          block w-full pl-12 pr-4 py-4 border-2 rounded-xl shadow-sm bg-white
-          focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500
-          transition-all duration-200 placeholder-gray-400
-          hover:border-gray-400 hover:shadow-md
-          ${error 
-            ? 'border-red-300 focus:ring-red-500/20 focus:border-red-500 bg-red-50/30' 
-            : 'border-gray-200 focus:bg-blue-50/30'
-          }
-        `}
-      />
-      {type === "password" && (
-        <button
-          type="button"
-          onClick={onTogglePassword}
-          className="absolute inset-y-0 right-0 pr-4 flex items-center hover:bg-gray-100 rounded-r-xl transition-colors"
-        >
-          {showPassword ? (
-            <EyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600" />
-          ) : (
-            <Eye className="h-5 w-5 text-gray-400 hover:text-gray-600" />
-          )}
-        </button>
-      )}
-      
-      {/* Focus ring effect */}
-      <div className={`absolute inset-0 rounded-xl border-2 border-transparent transition-all duration-200 ${
-        error ? '' : 'group-focus-within:border-blue-200 group-focus-within:shadow-lg'
-      } pointer-events-none`}></div>
-    </div>
-    {error && (
-      <div className="flex items-center gap-2 text-sm text-red-600 bg-red-50 px-3 py-2 rounded-lg">
-        <AlertCircle className="h-4 w-4 flex-shrink-0" />
-        <span>{error}</span>
-      </div>
-    )}
-  </div>
-);
-
+import { AlertCircle, Loader2, Shield, Hammer } from "lucide-react";
+import { Button } from "../../components/ui/button";
+import { Input } from "../../components/ui/input";
+import { Label } from "../../components/ui/label";
 
 
 export default function Signup() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
+    firstname: "",
+    lastname: "",
     username: "",
     email: "",
-    password: "",
-    confirmPassword: ""
+    password: ""
   });
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [notification, setNotification] = useState(null);
-
-  // Customer-only signup. Business roles are created by Admin.
 
   const validateForm = () => {
     const newErrors = {};
+    
+    if (!formData.firstname.trim()) {
+      newErrors.firstname = "First name is required";
+    }
+    
+    if (!formData.lastname.trim()) {
+      newErrors.lastname = "Last name is required";
+    }
     
     if (!formData.username.trim()) {
       newErrors.username = "Username is required";
@@ -98,21 +48,24 @@ export default function Signup() {
       newErrors.password = "Password must be at least 6 characters";
     }
     
-    if (!formData.confirmPassword.trim()) {
-      newErrors.confirmPassword = "Please confirm your password";
-    } else if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = "Passwords do not match";
-    }
-    
-    // Role is fixed to CUSTOMER
-    
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    let updatedData = { ...formData, [name]: value };
+    
+    // Auto-generate username from firstname and lastname
+    if (name === 'firstname' || name === 'lastname') {
+      const first = name === 'firstname' ? value : formData.firstname;
+      const last = name === 'lastname' ? value : formData.lastname;
+      if (first && last) {
+        updatedData.username = `${first.toLowerCase()}.${last.toLowerCase()}`;
+      }
+    }
+    
+    setFormData(updatedData);
     
     // Clear error when user starts typing
     if (errors[name]) {
@@ -125,22 +78,13 @@ export default function Signup() {
     setTimeout(() => setNotification(null), 5000);
   };
 
-  // Handle Google OAuth success
-  const handleGoogleSuccess = (data) => {
+  // Handle Google OAuth
+  const handleGoogleSignup = async () => {
     try {
-      showNotification("success", "Google account created successfully! Redirecting to login...");
-      
-      setTimeout(() => {
-        navigate("/login");
-      }, 2000);
+      showNotification("info", "Google OAuth coming soon!");
     } catch (error) {
-      showNotification("error", "Failed to process Google signup");
+      showNotification("error", "Google signup failed");
     }
-  };
-
-  // Handle Google OAuth error
-  const handleGoogleError = (error) => {
-    showNotification("error", error || "Google signup failed");
   };
 
   const handleSubmit = async (e) => {
@@ -161,7 +105,11 @@ export default function Signup() {
         role: 'CUSTOMER'
       };
 
-      const response = await fetch("http://localhost:8080/api/auth/signup", {
+      console.log('Signup data:', { ...signupData, password: '***' });
+      console.log('✅ Your username will be:', signupData.username);
+
+      const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:8080';
+      const response = await fetch(`${API_BASE}/api/auth/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(signupData),
@@ -170,12 +118,12 @@ export default function Signup() {
       const data = await response.json();
 
       if (response.ok && data.message) {
-        showNotification("success", "Account created successfully! Redirecting to login...");
+        console.log('✅ Signup successful! Username:', signupData.username);
+        showNotification("success", `Account created! Login with username: ${signupData.username}`);
         
-        // Redirect to login page after a short delay
         setTimeout(() => {
-          navigate("/login");
-        }, 2000);
+          navigate("/login", { state: { username: signupData.username } });
+        }, 3000);
       } else {
         throw new Error(data.error || "Signup failed");
       }
@@ -188,186 +136,262 @@ export default function Signup() {
   };
 
   return (
-    <AuthLayout 
-      mode="signup"
-      title="Join Athukorala Traders"
-      subtitle="Create your account and start shopping premium hardware"
-      footerText="Already have an account?"
-      footerLink="/login"
-      footerLinkText="Sign In"
-    >
-      {/* Notification */}
-      {notification && (
-        <div className={`
-          mb-6 p-4 rounded-xl flex items-center gap-3 animate-in slide-in-from-top-2 duration-300 border
-          ${notification.type === 'success' 
-            ? 'bg-gradient-to-r from-green-50 to-emerald-50 border-green-200 text-green-800' 
-            : 'bg-gradient-to-r from-red-50 to-pink-50 border-red-200 text-red-800'
-          }
-        `}>
-          {notification.type === 'success' ? (
-            <div className="p-1 bg-green-100 rounded-full">
-              <Check className="h-4 w-4 text-green-600" />
-            </div>
-          ) : (
-            <div className="p-1 bg-red-100 rounded-full">
-              <AlertCircle className="h-4 w-4 text-red-600" />
+    <section className="flex min-h-screen bg-zinc-50 px-4 py-16 md:py-32 relative overflow-hidden">
+      {/* Background Image */}
+      <div className="absolute inset-0 z-0">
+        <img
+          src="https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?w=1920&h=1080&fit=crop"
+          alt="Power tools background"
+          className="w-full h-full object-cover opacity-20"
+        />
+        <div className="absolute inset-0 bg-gradient-to-br from-zinc-50/95 via-purple-50/90 to-zinc-50/95" />
+      </div>
+      <form
+        onSubmit={handleSubmit}
+        className="m-auto h-fit w-full max-w-sm rounded-[calc(var(--radius)+.125rem)] border bg-white p-0.5 shadow-md relative z-10"
+      >
+        <div className="p-8 pb-6">
+          <div>
+            <Link
+              to="/"
+              aria-label="go home"
+              className="inline-flex items-center gap-2 text-gray-900 hover:text-blue-600 transition-colors"
+            >
+              <Hammer className="h-6 w-6" />
+              <span className="font-bold text-lg">Athukorala Traders</span>
+            </Link>
+            <h1 className="mb-1 mt-4 text-xl font-semibold text-gray-900">
+              Create a Tailark Account
+            </h1>
+            <p className="text-sm text-gray-600">
+              Welcome! Create an account to get started
+            </p>
+          </div>
+
+          {/* Notification */}
+          {notification && (
+            <div
+              className={`mt-4 flex items-center gap-2 rounded-lg border p-3 text-sm ${
+                notification.type === 'success'
+                  ? 'border-green-200 bg-green-50 text-green-800'
+                  : notification.type === 'error'
+                  ? 'border-red-200 bg-red-50 text-red-800'
+                  : 'border-blue-200 bg-blue-50 text-blue-800'
+              }`}
+            >
+              <AlertCircle className="h-4 w-4 flex-shrink-0" />
+              <span>{notification.message}</span>
             </div>
           )}
-          <span className="font-semibold text-sm">{notification.message}</span>
-        </div>
-      )}
 
-      <form onSubmit={handleSubmit} className="space-y-5">
-        <InputField
-          icon={User}
-          label="Username"
-          type="text"
-          name="username"
-          placeholder="Choose a unique username"
-          value={formData.username}
-          onChange={handleChange}
-          error={errors.username}
-          autoComplete="username"
-        />
+          <div className="mt-6 grid grid-cols-2 gap-3">
+            <Button
+              type="button"
+              variant="outline"
+              className="flex items-center justify-center gap-2"
+              onClick={handleGoogleSignup}
+              disabled={isLoading}
+            >
+              <svg
+                width="0.98em"
+                height="1em"
+                viewBox="0 0 256 262"
+              >
+                <path
+                  fill="#4285f4"
+                  d="M255.878 133.451c0-10.734-.871-18.567-2.756-26.69H130.55v48.448h71.947c-1.45 12.04-9.283 30.172-26.69 42.356l-.244 1.622l38.755 30.023l2.685.268c24.659-22.774 38.875-56.282 38.875-96.027"
+                />
+                <path
+                  fill="#34a853"
+                  d="M130.55 261.1c35.248 0 64.839-11.605 86.453-31.622l-41.196-31.913c-11.024 7.688-25.82 13.055-45.257 13.055c-34.523 0-63.824-22.773-74.269-54.25l-1.531.13l-40.298 31.187l-.527 1.465C35.393 231.798 79.49 261.1 130.55 261.1"
+                />
+                <path
+                  fill="#fbbc05"
+                  d="M56.281 156.37c-2.756-8.123-4.351-16.827-4.351-25.82c0-8.994 1.595-17.697 4.206-25.82l-.073-1.73L15.26 71.312l-1.335.635C5.077 89.644 0 109.517 0 130.55s5.077 40.905 13.925 58.602z"
+                />
+                <path
+                  fill="#eb4335"
+                  d="M130.55 50.479c24.514 0 41.05 10.589 50.479 19.438l36.844-35.974C195.245 12.91 165.798 0 130.55 0C79.49 0 35.393 29.301 13.925 71.947l42.211 32.783c10.59-31.477 39.891-54.251 74.414-54.251"
+                />
+              </svg>
+              <span>Google</span>
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              className="flex items-center justify-center gap-2"
+              disabled={isLoading}
+            >
+              <svg
+                width="1em"
+                height="1em"
+                viewBox="0 0 256 256"
+              >
+                <path fill="#f1511b" d="M121.666 121.666H0V0h121.666z" />
+                <path fill="#80cc28" d="M256 121.666H134.335V0H256z" />
+                <path
+                  fill="#00adef"
+                  d="M121.663 256.002H0V134.336h121.663z"
+                />
+                <path
+                  fill="#fbbc09"
+                  d="M256 256.002H134.335V134.336H256z"
+                />
+              </svg>
+              <span>Microsoft</span>
+            </Button>
+          </div>
 
-        <InputField
-          icon={Mail}
-          label="Email Address"
-          type="email"
-          name="email"
-          placeholder="Enter your email address"
-          value={formData.email}
-          onChange={handleChange}
-          error={errors.email}
-          autoComplete="email"
-        />
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <InputField
-            icon={Lock}
-            label="Password"
-            type={showPassword ? "text" : "password"}
-            name="password"
-            placeholder="Create a strong password"
-            value={formData.password}
-            onChange={handleChange}
-            error={errors.password}
-            autoComplete="new-password"
-            showPassword={showPassword}
-            onTogglePassword={() => setShowPassword(!showPassword)}
-          />
+          <hr className="my-4 border-dashed" />
 
-          <InputField
-            icon={Lock}
-            label="Confirm Password"
-            type={showConfirmPassword ? "text" : "password"}
-            name="confirmPassword"
-            placeholder="Confirm your password"
-            value={formData.confirmPassword}
-            onChange={handleChange}
-            error={errors.confirmPassword}
-            autoComplete="new-password"
-            showPassword={showConfirmPassword}
-            onTogglePassword={() => setShowConfirmPassword(!showConfirmPassword)}
-          />
-        </div>
-
-        {/* Account Type Info */}
-        <div className="bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 p-4 rounded-xl">
-          <div className="flex items-start gap-3">
-            <div className="p-1 bg-blue-100 rounded-full">
-              <Shield className="h-4 w-4 text-blue-600" />
+          <div className="space-y-5">
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-2">
+                <Label htmlFor="firstname" className="block text-sm">
+                  Firstname
+                </Label>
+                <Input
+                  type="text"
+                  required
+                  name="firstname"
+                  id="firstname"
+                  placeholder="John"
+                  value={formData.firstname}
+                  onChange={handleChange}
+                  disabled={isLoading}
+                />
+                {errors.firstname && (
+                  <p className="text-xs text-red-600 flex items-center gap-1">
+                    <AlertCircle className="h-3 w-3" />
+                    {errors.firstname}
+                  </p>
+                )}
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="lastname" className="block text-sm">
+                  Lastname
+                </Label>
+                <Input
+                  type="text"
+                  required
+                  name="lastname"
+                  id="lastname"
+                  placeholder="Doe"
+                  value={formData.lastname}
+                  onChange={handleChange}
+                  disabled={isLoading}
+                />
+                {errors.lastname && (
+                  <p className="text-xs text-red-600 flex items-center gap-1">
+                    <AlertCircle className="h-3 w-3" />
+                    {errors.lastname}
+                  </p>
+                )}
+              </div>
             </div>
-            <div>
-              <p className="text-sm font-semibold text-blue-900 mb-1">Customer Account</p>
-              <p className="text-xs text-blue-700">
-                Perfect for shopping our extensive hardware collection. Business accounts (Admin/Staff/Supplier) are created through Business Portal.
+
+            <div className="space-y-2">
+              <Label htmlFor="username" className="block text-sm">
+                Username
+              </Label>
+              <Input
+                type="text"
+                required
+                name="username"
+                id="username"
+                placeholder="john.doe"
+                value={formData.username}
+                onChange={handleChange}
+                disabled={isLoading}
+              />
+              {errors.username && (
+                <p className="text-xs text-red-600 flex items-center gap-1">
+                  <AlertCircle className="h-3 w-3" />
+                  {errors.username}
+                </p>
+              )}
+              <p className="text-xs text-gray-500">
+                Auto-generated from your name. You can customize it.
               </p>
             </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="email" className="block text-sm">
+                Email
+              </Label>
+              <Input
+                type="email"
+                required
+                name="email"
+                id="email"
+                placeholder="john.doe@example.com"
+                value={formData.email}
+                onChange={handleChange}
+                disabled={isLoading}
+              />
+              {errors.email && (
+                <p className="text-xs text-red-600 flex items-center gap-1">
+                  <AlertCircle className="h-3 w-3" />
+                  {errors.email}
+                </p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="password" className="text-sm">
+                Password
+              </Label>
+              <Input
+                type="password"
+                required
+                name="password"
+                id="password"
+                placeholder="Create a strong password"
+                value={formData.password}
+                onChange={handleChange}
+                disabled={isLoading}
+              />
+              {errors.password && (
+                <p className="text-xs text-red-600 flex items-center gap-1">
+                  <AlertCircle className="h-3 w-3" />
+                  {errors.password}
+                </p>
+              )}
+            </div>
+
+            <Button className="w-full" disabled={isLoading}>
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Creating account...
+                </>
+              ) : (
+                <>
+                  <Shield className="mr-2 h-4 w-4" />
+                  Continue
+                </>
+              )}
+            </Button>
           </div>
         </div>
 
-        {/* Terms & Conditions */}
-        <div className="flex items-start gap-3">
-          <input
-            id="terms"
-            type="checkbox"
-            required
-            className="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded transition-colors"
-          />
-          <label htmlFor="terms" className="text-sm text-gray-700 leading-relaxed">
-            I agree to the{" "}
-            <Link to="/terms" className="font-semibold text-blue-600 hover:text-purple-600 transition-colors">
-              Terms of Service
-            </Link>{" "}
-            and{" "}
-            <Link to="/privacy" className="font-semibold text-blue-600 hover:text-purple-600 transition-colors">
-              Privacy Policy
-            </Link>
-            , and consent to receive promotional emails about new products and offers.
-          </label>
-        </div>
-
-        <button
-          type="submit"
-          disabled={isLoading}
-          className={`
-            w-full flex items-center justify-center gap-3 py-4 px-6 rounded-xl font-semibold text-white
-            transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500
-            transform hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl
-            ${isLoading 
-              ? 'bg-gradient-to-r from-gray-400 to-gray-500 cursor-not-allowed transform-none' 
-              : 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700'
-            }
-          `}
-        >
-          {isLoading ? (
-            <>
-              <Loader2 className="h-5 w-5 animate-spin" />
-              <span>Creating your account...</span>
-            </>
-          ) : (
-            <>
-              <Star className="h-5 w-5" />
-              <span>Create My Account</span>
-            </>
-          )}
-        </button>
-
-        {/* Enhanced Divider */}
-        <div className="relative my-8">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-gray-200"></div>
-          </div>
-          <div className="relative flex justify-center">
-            <span className="px-6 bg-white text-sm font-medium text-gray-500 border border-gray-200 rounded-full">
-              or sign up with
-            </span>
-          </div>
-        </div>
-
-        {/* Enhanced Google OAuth Button */}
-        <div className="transform transition-all duration-200 hover:scale-[1.01]">
-          <GoogleOAuthButton
-            type="signup"
-            onSuccess={handleGoogleSuccess}
-            onError={handleGoogleError}
-            disabled={isLoading}
-            className="shadow-md hover:shadow-lg"
-          />
+        <div className="rounded-b-[calc(var(--radius)+.125rem)] border-t bg-zinc-50 p-3">
+          <p className="text-center text-sm text-gray-700">
+            Have an account?
+            <Button asChild variant="link" className="px-2">
+              <Link to="/login">Sign In</Link>
+            </Button>
+          </p>
         </div>
       </form>
 
       {/* Trust Indicators */}
-      <div className="mt-6 text-center">
-        <div className="flex items-center justify-center gap-2 text-xs text-gray-500">
-          <Shield className="h-4 w-4" />
-          <span>Your data is protected</span>
-          <span>•</span>
-          <span>No spam guarantee</span>
-        </div>
+      <div className="fixed bottom-4 left-0 right-0 flex items-center justify-center gap-2 text-xs text-gray-500 z-10">
+        <Shield className="h-3 w-3" />
+        <span>Your data is protected</span>
+        <span>•</span>
+        <span>No spam guarantee</span>
       </div>
-    </AuthLayout>
+    </section>
   );
 }

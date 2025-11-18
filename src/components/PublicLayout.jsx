@@ -5,11 +5,34 @@ import { useCart } from '../contexts/CartContext';
 import CartButton from './CartButton';
 import ShoppingCartModal from './ShoppingCartModal';
 import FloatingActionButtons from './FloatingActionButtons';
+import { Navbar1 } from './ui/navbar-1';
+import { ModernFooter } from './ModernFooter';
 
 const PublicLayout = ({ children }) => {
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [showNavbar, setShowNavbar] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
+
+  React.useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      
+      if (currentScrollY < lastScrollY || currentScrollY < 100) {
+        // Scrolling up or at top
+        setShowNavbar(true);
+      } else {
+        // Scrolling down
+        setShowNavbar(false);
+      }
+      
+      setLastScrollY(currentScrollY);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [lastScrollY]);
 
   const navLinks = [
     { to: '/', label: 'Home', icon: Home },
@@ -17,6 +40,29 @@ const PublicLayout = ({ children }) => {
     { to: '/about', label: 'About', icon: Info },
     { to: '/contact', label: 'Contact', icon: MessageCircle },
   ];
+
+  const logoComponent = (
+    <Link to="/" className="flex items-center space-x-3 group">
+      <div className="relative">
+        <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl flex items-center justify-center transform transition-all duration-300 group-hover:scale-110 shadow-lg">
+          <Package className="w-6 h-6 text-white" />
+        </div>
+      </div>
+      <div className="transition-all duration-300">
+        <h1 className="text-xl font-extrabold text-gray-900 group-hover:text-blue-600 transition-colors duration-300 tracking-tight">Athukorala</h1>
+        <p className="text-xs text-gray-600 -mt-0.5 group-hover:text-gray-800 transition-colors duration-300 font-medium">Hardware Traders</p>
+      </div>
+    </Link>
+  );
+
+  const ctaButtonComponent = (
+    <Link
+      to="/login"
+      className="inline-flex items-center justify-center px-6 py-2.5 text-sm text-white bg-black rounded-full hover:bg-gray-800 transition-colors font-medium shadow-md hover:shadow-lg"
+    >
+      Login
+    </Link>
+  );
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -48,109 +94,14 @@ const PublicLayout = ({ children }) => {
         </div>
       </div>
 
-      {/* Main Header */}
-      <header className="bg-white shadow-2xl border-b-2 border-gray-100 sticky top-0 z-40">
-        <div className="container mx-auto px-4">
-          <div className="flex justify-between items-center h-24">
-            {/* Logo */}
-            <Link to="/" className="flex items-center space-x-4 group">
-              <div className="relative">
-                <div className="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center transform transition-all duration-300 group-hover:scale-110 group-hover:rotate-3 shadow-xl group-hover:shadow-2xl">
-                  <Package className="w-9 h-9 text-white" />
-                </div>
-                <div className="absolute -inset-1 bg-blue-600 rounded-2xl blur opacity-30 group-hover:opacity-50 transition-opacity duration-300"></div>
-              </div>
-              <div className="transition-all duration-300">
-                <h1 className="text-3xl font-extrabold text-gray-900 group-hover:text-blue-600 transition-colors duration-300 tracking-tight">Athukorala</h1>
-                <p className="text-sm text-gray-600 -mt-1 group-hover:text-gray-800 transition-colors duration-300 font-medium">Hardware Traders</p>
-              </div>
-            </Link>
-
-            {/* Desktop Navigation */}
-            <nav className="hidden lg:flex items-center space-x-2">
-              {navLinks.map((link, index) => (
-                <Link
-                  key={link.to}
-                  to={link.to}
-                  className="relative flex items-center gap-2 px-6 py-3 text-gray-700 hover:text-blue-600 font-semibold transition-all duration-300 group rounded-2xl hover:bg-blue-50"
-                >
-                  <link.icon className="w-5 h-5 transition-all duration-300 group-hover:scale-110" />
-                  <span className="relative">
-                    {link.label}
-                    <span className="absolute -bottom-1 left-0 w-0 h-1 bg-blue-600 rounded-full transition-all duration-300 group-hover:w-full"></span>
-                  </span>
-                </Link>
-              ))}
-            </nav>
-
-            {/* Desktop Actions */}
-            <div className="hidden lg:flex items-center space-x-4">
-              <div className="relative group">
-                <CartButton 
-                  onClick={() => setIsCartOpen(true)} 
-                  className="text-gray-700 hover:text-blue-600 hover:bg-blue-50 p-4 rounded-2xl transition-all duration-300 hover:scale-110 hover:shadow-lg" 
-                />
-              </div>
-              <div className="relative">
-                <Link
-                  to="/login"
-                  className="flex items-center gap-3 bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-2xl transition-all duration-300 font-bold shadow-lg hover:shadow-2xl transform hover:scale-105"
-                >
-                  <LogIn className="w-5 h-5" />
-                  <span>Login</span>
-                </Link>
-              </div>
-            </div>
-
-            {/* Mobile Menu Button */}
-            <button
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="lg:hidden p-4 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-2xl transition-all duration-300 hover:scale-110"
-            >
-              {isMobileMenuOpen ? 
-                <X className="w-7 h-7" /> : 
-                <Menu className="w-7 h-7" />
-              }
-            </button>
-          </div>
-
-          {/* Mobile Menu */}
-          {isMobileMenuOpen && (
-            <div className="lg:hidden border-t-2 border-gray-100 bg-white">
-              <nav className="py-6 space-y-2">
-                {navLinks.map((link, index) => (
-                  <Link
-                    key={link.to}
-                    to={link.to}
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="flex items-center gap-4 mx-4 px-5 py-4 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-2xl transition-all duration-300 font-semibold group"
-                  >
-                    <link.icon className="w-6 h-6 transition-all duration-300 group-hover:scale-110" />
-                    <span>{link.label}</span>
-                  </Link>
-                ))}
-                <div className="mx-4 px-5 pt-4 border-t-2 border-gray-100 flex items-center justify-between gap-4">
-                  <CartButton 
-                    onClick={() => {
-                      setIsCartOpen(true);
-                      setIsMobileMenuOpen(false);
-                    }} 
-                    className="text-gray-700 hover:text-blue-600 hover:bg-blue-50 p-4 rounded-2xl transition-all duration-300" 
-                  />
-                  <Link
-                    to="/login"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="flex items-center gap-3 bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-2xl transition-all duration-300 font-bold shadow-lg flex-1 justify-center"
-                  >
-                    <LogIn className="w-5 h-5" />
-                    <span>Login</span>
-                  </Link>
-                </div>
-              </nav>
-            </div>
-          )}
-        </div>
-      </header>
+      {/* New Modern Navbar */}
+      <div className={`sticky top-0 z-50 bg-gray-50 transition-transform duration-300 ${showNavbar ? 'translate-y-0' : '-translate-y-full'}`}>
+        <Navbar1 
+          navLinks={navLinks}
+          logo={logoComponent}
+          ctaButton={ctaButtonComponent}
+        />
+      </div>
 
       {/* Main Content */}
       <main className="flex-1">
@@ -158,96 +109,7 @@ const PublicLayout = ({ children }) => {
       </main>
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-white">
-        <div className="container mx-auto px-4 py-12">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            {/* Company Info */}
-            <div className="col-span-1 md:col-span-2">
-              <div className="flex items-center space-x-2 mb-4">
-                <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
-                  <Package className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold">Athukorala Hardware Traders</h3>
-                  <p className="text-gray-400 text-sm">Your trusted hardware partner</p>
-                </div>
-              </div>
-              <p className="text-gray-400 mb-4 leading-relaxed">
-                We are a leading hardware trading company in Sri Lanka, providing quality tools, 
-                equipment, and materials for construction, industrial, and domestic needs since 1995.
-              </p>
-              <div className="flex space-x-4">
-                {/* Social Media Links */}
-                <a href="#" className="w-8 h-8 bg-gray-800 hover:bg-blue-600 rounded-full flex items-center justify-center transition-colors">
-                  <span className="text-sm font-bold">f</span>
-                </a>
-                <a href="#" className="w-8 h-8 bg-gray-800 hover:bg-blue-600 rounded-full flex items-center justify-center transition-colors">
-                  <span className="text-sm font-bold">t</span>
-                </a>
-                <a href="#" className="w-8 h-8 bg-gray-800 hover:bg-blue-600 rounded-full flex items-center justify-center transition-colors">
-                  <span className="text-sm font-bold">in</span>
-                </a>
-              </div>
-            </div>
-
-            {/* Quick Links */}
-            <div>
-              <h4 className="text-lg font-semibold mb-4">Quick Links</h4>
-              <ul className="space-y-2">
-                {navLinks.map((link) => (
-                  <li key={link.to}>
-                    <Link
-                      to={link.to}
-                      className="text-gray-400 hover:text-white transition-colors duration-200 flex items-center gap-2"
-                    >
-                      <link.icon className="w-4 h-4" />
-                      {link.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Contact Info */}
-            <div>
-              <h4 className="text-lg font-semibold mb-4">Contact Info</h4>
-              <ul className="space-y-3">
-                <li className="flex items-center gap-3">
-                  <MapPin className="w-5 h-5 text-blue-400" />
-                  <span className="text-gray-400">123 Hardware Street, Colombo 03, Sri Lanka</span>
-                </li>
-                <li className="flex items-center gap-3">
-                  <Phone className="w-5 h-5 text-blue-400" />
-                  <span className="text-gray-400">+94 11 234 5678</span>
-                </li>
-                <li className="flex items-center gap-3">
-                  <Mail className="w-5 h-5 text-blue-400" />
-                  <span className="text-gray-400">info@athukolaratraders.lk</span>
-                </li>
-              </ul>
-              
-              <div className="mt-4">
-                <h5 className="font-medium mb-2">Business Hours</h5>
-                <p className="text-gray-400 text-sm">Mon - Fri: 8:00 AM - 6:00 PM</p>
-                <p className="text-gray-400 text-sm">Sat: 8:00 AM - 4:00 PM</p>
-                <p className="text-gray-400 text-sm">Sun: Closed</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Bottom Bar */}
-          <div className="border-t border-gray-800 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
-            <p className="text-gray-400 text-sm">
-              © 2025 Athukorala Hardware Traders. All rights reserved.
-            </p>
-            <div className="flex items-center space-x-6 mt-4 md:mt-0">
-              <a href="#" className="text-gray-400 hover:text-white text-sm transition-colors">Privacy Policy</a>
-              <a href="#" className="text-gray-400 hover:text-white text-sm transition-colors">Terms of Service</a>
-              <a href="#" className="text-gray-400 hover:text-white text-sm transition-colors">Sitemap</a>
-            </div>
-          </div>
-        </div>
-      </footer>
+      <ModernFooter />
 
       {/* Shopping Cart Modal */}
       <ShoppingCartModal isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />

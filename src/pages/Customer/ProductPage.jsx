@@ -14,6 +14,7 @@ import ShoppingCartModal from '../../components/ShoppingCartModal';
 import PublicLayout from '../../components/PublicLayout';
 import CustomerLayout from '../../components/CustomerLayout';
 import EnhancedProductCard from '../../components/EnhancedProductCard';
+import { ProductCard as ProductCard1 } from '../../components/ui/product-card-1';
 import ProductQuickView from '../../components/ProductQuickView';
 import ProductFilters from '../../components/ProductFilters';
 import LoadingSpinner from '../../components/LoadingSpinner';
@@ -1277,26 +1278,9 @@ const ProductCard = ({ product }) => {
                   <div className={viewMode === 'grid' ? `grid grid-cols-1 md:grid-cols-2 ${gridCols === 4 ? 'lg:grid-cols-4' : 'lg:grid-cols-3'} gap-5` : "space-y-4"}>
                     {filteredProducts.map(product => (
                       viewMode === 'grid' ? (
-                        <EnhancedProductCard 
-                          key={product.id} 
-                          product={product}
-                          onQuickView={() => setQuickViewProduct(product)}
-                          onAddToCart={(prod) => handleAddToCart(prod, 1)}
-                          onToggleWishlist={(prod) => {
-                            if (isInWishlist(prod.id)) {
-                              removeFromWishlist(prod.id);
-                            } else {
-                              addToWishlist(prod);
-                            }
-                          }}
-                          onToggleComparison={(prod) => {
-                            addToComparison(prod);
-                          }}
-                          isInWishlist={isInWishlist(product.id)}
-                          isInComparison={isInComparison(product.id)}
-                        />
+                        <ProductCard key={getPid(product)} product={product} />
                       ) : (
-                        <ProductListItem key={product.id} product={product} />
+                        <ProductListItem key={getPid(product)} product={product} />
                       )
                     ))}
                   </div>

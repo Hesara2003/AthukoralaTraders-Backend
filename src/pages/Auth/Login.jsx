@@ -1,80 +1,26 @@
 import React, { useState } from "react";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
-import { User, Lock, AlertCircle, Loader2, LogIn, Eye, EyeOff, Mail, Shield } from "lucide-react";
-import GoogleOAuthButton from "../../components/GoogleOAuthButton";
-import AuthLayout from "../../components/AuthLayout";
-
-const InputField = ({ icon: Icon, label, error, type = "text", showPassword, onTogglePassword, ...props }) => (
-  <div className="space-y-2">
-    <label className="block text-sm font-semibold text-gray-700 mb-2">
-      {label}
-    </label>
-    <div className="relative group">
-      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-        <Icon className={`h-5 w-5 transition-colors duration-200 ${
-          error 
-            ? 'text-red-500' 
-            : 'text-gray-400 group-focus-within:text-blue-600'
-        }`} />
-      </div>
-      <input
-        type={type}
-        {...props}
-        className={`
-          block w-full pl-12 pr-4 py-4 border-2 rounded-xl shadow-sm bg-white
-          focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500
-          transition-all duration-200 placeholder-gray-400
-          hover:border-gray-400 hover:shadow-md
-          ${error 
-            ? 'border-red-300 focus:ring-red-500/20 focus:border-red-500 bg-red-50/30' 
-            : 'border-gray-200 focus:bg-blue-50/30'
-          }
-        `}
-      />
-      {type === "password" && (
-        <button
-          type="button"
-          onClick={onTogglePassword}
-          className="absolute inset-y-0 right-0 pr-4 flex items-center hover:bg-gray-100 rounded-r-xl transition-colors"
-        >
-          {showPassword ? (
-            <EyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600" />
-          ) : (
-            <Eye className="h-5 w-5 text-gray-400 hover:text-gray-600" />
-          )}
-        </button>
-      )}
-      
-      {/* Focus ring effect */}
-      <div className={`absolute inset-0 rounded-xl border-2 border-transparent transition-all duration-200 ${
-        error ? '' : 'group-focus-within:border-blue-200 group-focus-within:shadow-lg'
-      } pointer-events-none`}></div>
-    </div>
-    {error && (
-      <div className="flex items-center gap-2 text-sm text-red-600 bg-red-50 px-3 py-2 rounded-lg">
-        <AlertCircle className="h-4 w-4 flex-shrink-0" />
-        <span>{error}</span>
-      </div>
-    )}
-  </div>
-);
+import { AlertCircle, Loader2, Shield, Hammer } from "lucide-react";
+import { Button } from "../../components/ui/button";
+import { Input } from "../../components/ui/input";
+import { Label } from "../../components/ui/label";
 
 export default function Login() {
   const navigate = useNavigate();
   const location = useLocation();
   const { login } = useAuth();
   
+  // Auto-fill username if coming from signup
   const [formData, setFormData] = useState({
-    username: "",
+    username: location.state?.username || "",
     password: ""
   });
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
   const [notification, setNotification] = useState(null);
 
-  // Intended destination from PrivateRoute (could include params or query string)
+  // Intended destination from PrivateRoute
   const fromLocation = location.state?.from;
 
   const validateForm = () => {
@@ -102,43 +48,13 @@ export default function Login() {
     setTimeout(() => setNotification(null), 5000);
   };
 
-  // Handle Google OAuth success
-  const handleGoogleSuccess = (data) => {
+  // Handle Google OAuth - simplified for new design
+  const handleGoogleLogin = async () => {
     try {
-      // Use the auth context to login with Google data
-      login(
-        data.token, 
-        data.user.username, 
-        data.user.role,
-        {
-          userId: data.user.id || data.user.userId,
-          email: data.user.email,
-          profileImage: data.user.profileImage,
-          fullName: data.user.fullName,
-          isGoogleAuth: true
-        }
-      );
-      
-      showNotification("success", "Google login successful! Redirecting...");
-      
-      // Check user role and redirect accordingly
-      if (data.user.role === 'ADMIN' || data.user.role === 'STAFF' || data.user.role === 'SUPPLIER') {
-        showNotification('error', 'Please use Business Login for Admin/Staff/Supplier. Redirecting...');
-        setTimeout(() => navigate('/business-login', { replace: true }), 1200);
-        return;
-      }
-      
-      setTimeout(() => {
-        navigate(fromLocation || '/products', { replace: true });
-      }, 1500);
+      showNotification("info", "Google OAuth coming soon!");
     } catch (error) {
-      showNotification("error", "Failed to process Google login");
+      showNotification("error", "Google login failed");
     }
-  };
-
-  // Handle Google OAuth error
-  const handleGoogleError = (error) => {
-    showNotification("error", error || "Google login failed");
   };
 
   const handleSubmit = async (e) => {
@@ -153,6 +69,9 @@ export default function Login() {
 
     try {
       const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:8080';
+      console.log('Login attempt:', { username: formData.username, hasPassword: !!formData.password });
+      console.log('API URL:', `${API_BASE}/api/auth/login`);
+      
       const response = await fetch(`${API_BASE}/api/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -160,6 +79,8 @@ export default function Login() {
       });
 
       const data = await response.json();
+      console.log('Response status:', response.status);
+      console.log('Response data:', data);
 
       if (response.ok && data.token) {
         // Use the auth context to login with all user data from backend
@@ -199,148 +120,221 @@ export default function Login() {
       }
     } catch (err) {
       console.error(err);
-      showNotification("error", err.message || "Login failed. Please try again.");
+      const errorMessage = err.message.includes("Invalid username or password") 
+        ? "Invalid credentials. Don't have an account? Sign up to get started!"
+        : err.message || "Login failed. Please try again.";
+      showNotification("error", errorMessage);
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <AuthLayout 
-      mode="signin"
-      title="Welcome Back"
-      subtitle="Sign in to continue shopping for quality hardware"
-      footerText="Don't have an account?"
-      footerLink="/signup"
-      footerLinkText="Create Account"
-    >
-      {/* Notification */}
-      {notification && (
-        <div className={`
-          mb-6 p-4 rounded-xl flex items-center gap-3 animate-in slide-in-from-top-2 duration-300 border
-          ${notification.type === 'success' 
-            ? 'bg-gradient-to-r from-green-50 to-emerald-50 border-green-200 text-green-800' 
-            : 'bg-gradient-to-r from-red-50 to-pink-50 border-red-200 text-red-800'
-          }
-        `}>
-          {notification.type === 'success' ? (
-            <div className="p-1 bg-green-100 rounded-full">
-              <LogIn className="h-4 w-4 text-green-600" />
-            </div>
-          ) : (
-            <div className="p-1 bg-red-100 rounded-full">
-              <AlertCircle className="h-4 w-4 text-red-600" />
+    <section className="flex min-h-screen bg-zinc-50 px-4 py-16 md:py-32 relative overflow-hidden">
+      {/* Background Image */}
+      <div className="absolute inset-0 z-0">
+        <img
+          src="https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?w=1920&h=1080&fit=crop"
+          alt="Hardware tools background"
+          className="w-full h-full object-cover opacity-20"
+        />
+        <div className="absolute inset-0 bg-gradient-to-br from-zinc-50/95 via-blue-50/90 to-zinc-50/95" />
+      </div>
+      <form
+        onSubmit={handleSubmit}
+        className="m-auto h-fit w-full max-w-sm rounded-[calc(var(--radius)+.125rem)] border bg-white p-0.5 shadow-md relative z-10"
+      >
+        <div className="p-8 pb-6">
+          <div>
+            <Link
+              to="/"
+              aria-label="go home"
+              className="inline-flex items-center gap-2 text-gray-900 hover:text-blue-600 transition-colors"
+            >
+              <Hammer className="h-6 w-6" />
+              <span className="font-bold text-lg">Athukorala Traders</span>
+            </Link>
+            <h1 className="mb-1 mt-4 text-xl font-semibold text-gray-900">
+              Welcome Back
+            </h1>
+            <p className="text-sm text-gray-600">
+              Sign in to continue shopping for quality hardware
+            </p>
+          </div>
+
+          {/* Notification */}
+          {notification && (
+            <div
+              className={`mt-4 flex items-center gap-2 rounded-lg border p-3 text-sm ${
+                notification.type === 'success'
+                  ? 'border-green-200 bg-green-50 text-green-800'
+                  : notification.type === 'error'
+                  ? 'border-red-200 bg-red-50 text-red-800'
+                  : 'border-blue-200 bg-blue-50 text-blue-800'
+              }`}
+            >
+              <AlertCircle className="h-4 w-4 flex-shrink-0" />
+              <span>{notification.message}</span>
             </div>
           )}
-          <span className="font-semibold text-sm">{notification.message}</span>
-        </div>
-      )}
 
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <InputField
-          icon={User}
-          label="Username or Email"
-          type="text"
-          name="username"
-          placeholder="Enter your username or email"
-          value={formData.username}
-          onChange={handleChange}
-          error={errors.username}
-          autoComplete="username"
-        />
-        
-        <InputField
-          icon={Lock}
-          label="Password"
-          type={showPassword ? "text" : "password"}
-          name="password"
-          placeholder="Enter your password"
-          value={formData.password}
-          onChange={handleChange}
-          error={errors.password}
-          autoComplete="current-password"
-          showPassword={showPassword}
-          onTogglePassword={() => setShowPassword(!showPassword)}
-        />
-
-        <div className="flex items-center justify-between">
-          <div className="flex items-center">
-            <input
-              id="remember-me"
-              type="checkbox"
-              className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded transition-colors"
-            />
-            <label htmlFor="remember-me" className="ml-3 block text-sm font-medium text-gray-700">
-              Keep me signed in
-            </label>
+          <div className="mt-6 grid grid-cols-2 gap-3">
+            <Button
+              type="button"
+              variant="outline"
+              className="flex items-center justify-center gap-2"
+              onClick={handleGoogleLogin}
+              disabled={isLoading}
+            >
+              <svg
+                width="0.98em"
+                height="1em"
+                viewBox="0 0 256 262"
+              >
+                <path
+                  fill="#4285f4"
+                  d="M255.878 133.451c0-10.734-.871-18.567-2.756-26.69H130.55v48.448h71.947c-1.45 12.04-9.283 30.172-26.69 42.356l-.244 1.622l38.755 30.023l2.685.268c24.659-22.774 38.875-56.282 38.875-96.027"
+                />
+                <path
+                  fill="#34a853"
+                  d="M130.55 261.1c35.248 0 64.839-11.605 86.453-31.622l-41.196-31.913c-11.024 7.688-25.82 13.055-45.257 13.055c-34.523 0-63.824-22.773-74.269-54.25l-1.531.13l-40.298 31.187l-.527 1.465C35.393 231.798 79.49 261.1 130.55 261.1"
+                />
+                <path
+                  fill="#fbbc05"
+                  d="M56.281 156.37c-2.756-8.123-4.351-16.827-4.351-25.82c0-8.994 1.595-17.697 4.206-25.82l-.073-1.73L15.26 71.312l-1.335.635C5.077 89.644 0 109.517 0 130.55s5.077 40.905 13.925 58.602z"
+                />
+                <path
+                  fill="#eb4335"
+                  d="M130.55 50.479c24.514 0 41.05 10.589 50.479 19.438l36.844-35.974C195.245 12.91 165.798 0 130.55 0C79.49 0 35.393 29.301 13.925 71.947l42.211 32.783c10.59-31.477 39.891-54.251 74.414-54.251"
+                />
+              </svg>
+              <span>Google</span>
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              className="flex items-center justify-center gap-2"
+              disabled={isLoading}
+            >
+              <svg
+                width="1em"
+                height="1em"
+                viewBox="0 0 256 256"
+              >
+                <path fill="#f1511b" d="M121.666 121.666H0V0h121.666z" />
+                <path fill="#80cc28" d="M256 121.666H134.335V0H256z" />
+                <path
+                  fill="#00adef"
+                  d="M121.663 256.002H0V134.336h121.663z"
+                />
+                <path
+                  fill="#fbbc09"
+                  d="M256 256.002H134.335V134.336H256z"
+                />
+              </svg>
+              <span>Microsoft</span>
+            </Button>
           </div>
-          <Link
-            to="/forgot-password"
-            className="text-sm font-semibold text-blue-600 hover:text-purple-600 transition-colors"
-          >
-            Forgot password?
-          </Link>
+
+          <hr className="my-4 border-dashed" />
+
+          <div className="space-y-5">
+            <div className="space-y-2">
+              <Label htmlFor="username" className="block text-sm">
+                Username or Email
+              </Label>
+              <Input
+                type="text"
+                required
+                name="username"
+                id="username"
+                placeholder="Enter username (e.g., john.doe)"
+                value={formData.username}
+                onChange={handleChange}
+                disabled={isLoading}
+              />
+              {errors.username && (
+                <p className="text-xs text-red-600 flex items-center gap-1">
+                  <AlertCircle className="h-3 w-3" />
+                  {errors.username}
+                </p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="password" className="text-sm">
+                Password
+              </Label>
+              <Input
+                type="password"
+                required
+                name="password"
+                id="password"
+                placeholder="Enter your password"
+                value={formData.password}
+                onChange={handleChange}
+                disabled={isLoading}
+              />
+              {errors.password && (
+                <p className="text-xs text-red-600 flex items-center gap-1">
+                  <AlertCircle className="h-3 w-3" />
+                  {errors.password}
+                </p>
+              )}
+            </div>
+
+            <div className="flex items-center justify-between text-sm">
+              <div className="flex items-center">
+                <input
+                  id="remember-me"
+                  type="checkbox"
+                  className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                />
+                <label htmlFor="remember-me" className="ml-2 text-gray-700">
+                  Keep me signed in
+                </label>
+              </div>
+              <Link
+                to="/forgot-password"
+                className="font-medium text-blue-600 hover:text-blue-700 transition-colors"
+              >
+                Forgot?
+              </Link>
+            </div>
+
+            <Button className="w-full" disabled={isLoading}>
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Signing in...
+                </>
+              ) : (
+                <>
+                  <Shield className="mr-2 h-4 w-4" />
+                  Sign In
+                </>
+              )}
+            </Button>
+          </div>
         </div>
 
-        <button
-          type="submit"
-          disabled={isLoading}
-          className={`
-            w-full flex items-center justify-center gap-3 py-4 px-6 rounded-xl font-semibold text-white
-            transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500
-            transform hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl
-            ${isLoading 
-              ? 'bg-gradient-to-r from-gray-400 to-gray-500 cursor-not-allowed transform-none' 
-              : 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700'
-            }
-          `}
-        >
-          {isLoading ? (
-            <>
-              <Loader2 className="h-5 w-5 animate-spin" />
-              <span>Signing you in...</span>
-            </>
-          ) : (
-            <>
-              <Shield className="h-5 w-5" />
-              <span>Sign In Securely</span>
-            </>
-          )}
-        </button>
-
-        {/* Enhanced Divider */}
-        <div className="relative my-8">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-gray-200"></div>
-          </div>
-          <div className="relative flex justify-center">
-            <span className="px-6 bg-white text-sm font-medium text-gray-500 border border-gray-200 rounded-full">
-              or continue with
-            </span>
-          </div>
-        </div>
-
-        {/* Enhanced Google OAuth Button */}
-        <div className="transform transition-all duration-200 hover:scale-[1.01]">
-          <GoogleOAuthButton
-            type="signin"
-            onSuccess={handleGoogleSuccess}
-            onError={handleGoogleError}
-            disabled={isLoading}
-            className="shadow-md hover:shadow-lg"
-          />
+        <div className="rounded-b-[calc(var(--radius)+.125rem)] border-t bg-zinc-50 p-3">
+          <p className="text-center text-sm text-gray-700">
+            Don't have an account?
+            <Button asChild variant="link" className="px-2">
+              <Link to="/signup">Create Account</Link>
+            </Button>
+          </p>
         </div>
       </form>
 
       {/* Trust Indicators */}
-      <div className="mt-8 text-center">
-        <div className="flex items-center justify-center gap-2 text-xs text-gray-500">
-          <Shield className="h-4 w-4" />
-          <span>256-bit SSL encrypted</span>
-          <span>•</span>
-          <span>GDPR compliant</span>
-        </div>
+      <div className="fixed bottom-4 left-0 right-0 flex items-center justify-center gap-2 text-xs text-gray-500 z-10">
+        <Shield className="h-3 w-3" />
+        <span>256-bit SSL encrypted</span>
+        <span>•</span>
+        <span>GDPR compliant</span>
       </div>
-    </AuthLayout>
+    </section>
   );
 }

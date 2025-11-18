@@ -2,44 +2,14 @@ import React from 'react';
 import { Award, Users, Target, Heart, Truck, ShieldCheck, Clock, Star, ArrowRight, Eye } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import PublicLayout from '../components/PublicLayout';
+import { Awards } from '../components/ui/award';
+import { RevealImageList } from '../components/ui/reveal-images';
+import { OurStorySection } from '../components/OurStorySection';
+import { BentoGrid, BentoCard } from '../components/ui/bento-grid';
+import { TestimonialSection } from '../components/ui/testimonials';
+import { TimelineDemo } from '../components/ui/timeline-demo';
 
 const AboutPage = () => {
-  const milestones = [
-    { year: '1995', title: 'Company Founded', description: 'Started as a small hardware shop in Colombo' },
-    { year: '2000', title: 'First Expansion', description: 'Expanded to include industrial equipment' },
-    { year: '2010', title: 'Digital Transformation', description: 'Launched online catalog and e-commerce platform' },
-    { year: '2015', title: 'Warehouse Expansion', description: 'Built modern 50,000 sq ft warehouse facility' },
-    { year: '2020', title: 'Island-wide Delivery', description: 'Extended delivery network across Sri Lanka' },
-    { year: '2025', title: 'Modern Platform', description: 'Launched advanced e-commerce and inventory system' },
-  ];
-
-  const teamMembers = [
-    {
-      name: 'Sunil Athukorala',
-      position: 'Founder & CEO',
-      description: 'With over 30 years in the hardware industry, Sunil leads our company with vision and dedication.',
-      image: '/api/placeholder/300/300'
-    },
-    {
-      name: 'Priya Athukorala',
-      position: 'Operations Director',
-      description: 'Priya oversees daily operations and ensures our high standards of customer service.',
-      image: '/api/placeholder/300/300'
-    },
-    {
-      name: 'Chaminda Perera',
-      position: 'Sales Manager',
-      description: 'Chaminda brings 15+ years of sales expertise and deep product knowledge to our team.',
-      image: '/api/placeholder/300/300'
-    },
-    {
-      name: 'Nuwan Silva',
-      position: 'Technical Advisor',
-      description: 'Nuwan provides technical expertise and helps customers choose the right solutions.',
-      image: '/api/placeholder/300/300'
-    }
-  ];
-
   const values = [
     {
       icon: ShieldCheck,
@@ -89,7 +59,7 @@ const AboutPage = () => {
   return (
     <PublicLayout>
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-blue-900 via-blue-800 to-blue-700 text-white py-16 overflow-hidden">
+      <section className="relative bg-white text-gray-900 py-16 overflow-hidden">
         {/* Background Images */}
         <div className="absolute inset-0 bg-cover bg-center bg-no-repeat" 
              style={{backgroundImage: 'url(/images/hero-backgrounds/about-hero-bg.jpg), url(/images/about-hero-store.svg)'}}></div>
@@ -123,7 +93,7 @@ const AboutPage = () => {
       </section>
 
       {/* Stats Section */}
-      <section className="py-8 bg-gray-50">
+      <section className="py-8 bg-white">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             {stats.map((stat, index) => (
@@ -140,69 +110,121 @@ const AboutPage = () => {
       </section>
 
       {/* Our Story Section */}
+      <OurStorySection />
+
+      {/* Why Choose Us - Bento Grid Section */}
       <section className="py-8 bg-white">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
-            <div className="bg-gray-50 p-5 rounded-2xl border-2 border-gray-200 shadow-lg">
-              <h2 className="text-3xl font-black text-gray-900 mb-4">Our Story</h2>
-              <div className="text-gray-700 text-sm space-y-3">
-                <p>
-                  Founded in 1995 by Sunil Athukorala, our company began as a small hardware shop 
-                  in the heart of Colombo. With a passion for quality tools and an unwavering 
-                  commitment to customer service, we quickly earned the trust of local contractors 
-                  and DIY enthusiasts.
-                </p>
-                <p>
-                  Over the years, we've expanded our inventory to include everything from basic 
-                  hand tools to sophisticated industrial equipment. Our growth has been driven 
-                  by one simple principle: provide our customers with the best products at 
-                  competitive prices, backed by expert knowledge and reliable service.
-                </p>
-                <p>
-                  Today, we're proud to serve thousands of customers across Sri Lanka, from 
-                  individual homeowners to large construction companies. Our journey continues 
-                  as we embrace new technologies and expand our reach while staying true to 
-                  our founding values.
-                </p>
-              </div>
+          <div className="text-center mb-6">
+            <h2 className="text-3xl font-black text-gray-900 mb-2">Why Choose Us</h2>
+            <p className="text-sm text-gray-700 max-w-2xl mx-auto font-bold">
+              Discover what makes Athukorala Traders your ideal hardware partner
+            </p>
+          </div>
+
+          <BentoGrid className="lg:grid-rows-3 max-w-6xl mx-auto">
+            <BentoCard
+              name="Quality Assurance"
+              className="col-span-3 lg:col-span-2"
+              background={
+                <img
+                  className="absolute inset-0 h-full w-full object-cover"
+                  src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=800&auto=format&fit=crop&q=80"
+                  alt="Quality tools and equipment"
+                />
+              }
+              Icon={ShieldCheck}
+              description="Premium products from trusted manufacturers, rigorously tested for reliability and performance."
+              href="/products"
+              cta="Browse Products"
+            />
+            <BentoCard
+              name="Expert Team"
+              className="col-span-3 lg:col-span-1"
+              background={
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-100 to-blue-200" />
+              }
+              Icon={Users}
+              description="30+ years of combined industry expertise at your service."
+              href="/about#team"
+              cta="Meet Our Team"
+            />
+            <BentoCard
+              name="Fast Delivery"
+              className="col-span-3 lg:col-span-1"
+              background={
+                <div className="absolute inset-0 bg-gradient-to-br from-purple-100 to-purple-200" />
+              }
+              Icon={Truck}
+              description="Island-wide delivery network ensuring quick and reliable service."
+              href="/contact"
+              cta="Learn More"
+            />
+            <BentoCard
+              name="Customer Satisfaction"
+              className="col-span-3 lg:col-span-2"
+              background={
+                <img
+                  className="absolute inset-0 h-full w-full object-cover"
+                  src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800&auto=format&fit=crop&q=80"
+                  alt="Happy customers"
+                />
+              }
+              Icon={Heart}
+              description="5000+ satisfied customers trust us for their hardware needs. Join our growing family today."
+              href="/contact"
+              cta="Get in Touch"
+            />
+          </BentoGrid>
+        </div>
+      </section>
+
+      {/* Awards & Recognition Section */}
+      <section className="py-16 bg-white relative overflow-hidden">
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-black text-gray-900 mb-2">Awards & Recognition</h2>
+            <p className="text-sm text-gray-700 max-w-2xl mx-auto font-bold">
+              Celebrating our achievements and industry recognition
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            <div className="transform hover:scale-105 transition-transform duration-300">
+              <Awards
+                variant="badge"
+                title="Excellence"
+                subtitle="Industry Leadership Award"
+                recipient="Sri Lanka Hardware Association"
+                date="2023"
+              />
             </div>
-            <div className="bg-white rounded-2xl p-5 border-2 border-gray-200 shadow-lg">
-              <div className="space-y-4">
-                <div className="flex items-start gap-3 bg-gray-50 p-4 rounded-xl border-2 border-gray-200">
-                  <div className="w-10 h-10 bg-green-600 rounded-xl flex items-center justify-center flex-shrink-0 border-2 border-green-700">
-                    <Target className="w-5 h-5 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-black text-gray-900">Our Mission</h3>
-                    <p className="text-gray-700 text-sm">To be Sri Lanka's most trusted hardware partner, providing quality products and expert service.</p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3 bg-gray-50 p-4 rounded-xl border-2 border-gray-200">
-                  <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center flex-shrink-0 border-2 border-blue-700">
-                    <Eye className="w-5 h-5 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-black text-gray-900">Our Vision</h3>
-                    <p className="text-gray-700 text-sm">To modernize the hardware industry in Sri Lanka through innovation and exceptional service.</p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3 bg-gray-50 p-4 rounded-xl border-2 border-gray-200">
-                  <div className="w-10 h-10 bg-purple-600 rounded-xl flex items-center justify-center flex-shrink-0 border-2 border-purple-700">
-                    <Heart className="w-5 h-5 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-black text-gray-900">Our Values</h3>
-                    <p className="text-gray-700 text-sm">Integrity, quality, innovation, and customer satisfaction guide every decision we make.</p>
-                  </div>
-                </div>
-              </div>
+            
+            <div className="transform hover:scale-105 transition-transform duration-300">
+              <Awards
+                variant="badge"
+                title="Customer Choice"
+                subtitle="Best Hardware Store"
+                recipient="5000+ Happy Customers"
+                date="2024"
+              />
+            </div>
+            
+            <div className="transform hover:scale-105 transition-transform duration-300">
+              <Awards
+                variant="badge"
+                title="Quality Partner"
+                subtitle="Authorized Dealer"
+                recipient="Bosch, DeWalt, Stanley"
+                date="2024"
+              />
             </div>
           </div>
         </div>
       </section>
 
       {/* Timeline Section */}
-      <section className="py-8 bg-gray-50">
+      <section className="py-8 bg-white">
         <div className="container mx-auto px-4">
           <div className="text-center mb-6">
             <h2 className="text-3xl font-black text-gray-900 mb-2">Our Journey</h2>
@@ -211,18 +233,8 @@ const AboutPage = () => {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {milestones.map((milestone, index) => (
-              <div key={index} className="relative bg-white rounded-2xl p-5 border-2 border-gray-200 shadow-lg">
-                <div className="absolute -top-3 left-4 bg-blue-600 text-white px-4 py-1 rounded-lg text-sm font-black border-2 border-blue-700">
-                  {milestone.year}
-                </div>
-                <div className="pt-3">
-                  <h3 className="text-lg font-black text-gray-900 mb-2">{milestone.title}</h3>
-                  <p className="text-gray-700 text-sm">{milestone.description}</p>
-                </div>
-              </div>
-            ))}
+          <div className="bg-white">
+            <TimelineDemo />
           </div>
         </div>
       </section>
@@ -231,10 +243,14 @@ const AboutPage = () => {
       <section className="py-8 bg-white">
         <div className="container mx-auto px-4">
           <div className="text-center mb-6">
-            <h2 className="text-3xl font-black text-gray-900 mb-2">Our Values</h2>
+            <h2 className="text-3xl font-black text-gray-900 mb-2">Our Core Values</h2>
             <p className="text-sm text-gray-700 max-w-2xl mx-auto font-bold">
               The principles that guide our business and shape our relationships with customers
             </p>
+          </div>
+
+          <div className="flex justify-center mb-8">
+            <RevealImageList />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -252,29 +268,33 @@ const AboutPage = () => {
       </section>
 
       {/* Team Section */}
-      <section className="py-8 bg-gray-50">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-6">
-            <h2 className="text-3xl font-black text-gray-900 mb-2">Meet Our Team</h2>
-            <p className="text-sm text-gray-700 max-w-2xl mx-auto font-bold">
-              The experienced professionals who make Athukorala Traders your trusted hardware partner
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {teamMembers.map((member, index) => (
-              <div key={index} className="bg-white rounded-2xl p-5 text-center border-2 border-gray-200 shadow-lg">
-                <div className="w-20 h-20 bg-blue-600 rounded-xl mx-auto mb-3 flex items-center justify-center border-2 border-blue-700">
-                  <Users className="w-10 h-10 text-white" />
-                </div>
-                <h3 className="text-lg font-black text-gray-900 mb-1">{member.name}</h3>
-                <p className="text-blue-600 font-bold mb-2 text-sm">{member.position}</p>
-                <p className="text-gray-700 text-xs leading-relaxed">{member.description}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      <TestimonialSection
+        title="Meet Our Team"
+        subtitle="The experienced professionals who make Athukorala Traders your trusted hardware partner"
+        testimonials={[
+          {
+            id: 1,
+            quote: "With over 15 years in the hardware industry, I lead our team to deliver exceptional service and quality products to every customer.",
+            name: "Rajitha Athukorala",
+            role: "Managing Director",
+            imageSrc: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=800&auto=format&fit=crop&q=80"
+          },
+          {
+            id: 2,
+            quote: "My passion is ensuring our customers find exactly what they need. Building relationships through trust and expertise is what drives me.",
+            name: "Kasun Perera",
+            role: "Sales Manager",
+            imageSrc: "https://images.unsplash.com/photo-1556157382-97eda2d62296?w=800&auto=format&fit=crop&q=80"
+          },
+          {
+            id: 3,
+            quote: "Quality control is my priority. Every product that leaves our warehouse meets the highest standards of excellence.",
+            name: "Dilshan Silva",
+            role: "Operations Manager",
+            imageSrc: "https://images.unsplash.com/photo-1566492031773-4f4e44671857?w=800&auto=format&fit=crop&q=80"
+          }
+        ]}
+      />
 
       {/* Certifications & Partnerships */}
       <section className="py-8 bg-white">
@@ -313,7 +333,7 @@ const AboutPage = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-8 bg-gray-50">
+      <section className="py-8 bg-white">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center bg-white p-6 rounded-2xl border-2 border-gray-200 shadow-lg">
             <h2 className="text-3xl font-black text-gray-900 mb-3">Ready to Work With Us?</h2>

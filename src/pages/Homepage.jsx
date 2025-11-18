@@ -10,6 +10,13 @@ import LoadingSpinner from '../components/LoadingSpinner';
 import RecentlyViewedSection from '../components/RecentlyViewedSection';
 import ProductQuickView from '../components/ProductQuickView';
 import EnhancedProductCard from '../components/EnhancedProductCard';
+import { HardwareHero } from '../components/HardwareHero';
+import { ProductCard } from '../components/ui/product-card';
+import { WhyChooseUs } from '../components/WhyChooseUs';
+import { Testimonials } from '../components/Testimonials';
+import { OurServices } from '../components/OurServices';
+import { CTASection } from '../components/CTASection';
+import { Awards } from '../components/ui/award';
 
 const Homepage = () => {
   const navigate = useNavigate();
@@ -23,7 +30,6 @@ const Homepage = () => {
   const [currentHeroSlide, setCurrentHeroSlide] = useState(0);
   const [currentBannerSlide, setCurrentBannerSlide] = useState(0);
   const [currentProductSlide, setCurrentProductSlide] = useState(0);
-  const [currentTestimonialSlide, setCurrentTestimonialSlide] = useState(0);
   // brands list used for the brands carousel (rendered twice for seamless looping)
   const brands = [
     { src: 'https://www.google.com/url?sa=i&url=https%3A%2F%2Fcommons.wikimedia.org%2Fwiki%2FFile%3ABosch-logo.svg&psig=AOvVaw2EkMoxduAgPhtQFZWONpwH&ust=1761378839411000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCIik09GtvJADFQAAAAAdAAAAABAE', alt: 'Bosch' },
@@ -265,103 +271,27 @@ const Homepage = () => {
         </div>
       </div>
 
-      {/* Hero Carousel */}
-      <section className="relative bg-blue-900 text-white overflow-hidden shadow-2xl">
-        {/* Animated Background Pattern */}
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-0 left-0 w-96 h-96 bg-white rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute bottom-0 right-0 w-96 h-96 bg-blue-300 rounded-full blur-3xl animate-pulse" style={{animationDelay: '1s'}}></div>
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-blue-400 rounded-full blur-3xl animate-pulse" style={{animationDelay: '2s'}}></div>
-        </div>
-        
-        {/* Decorative Elements */}
-        <div className="absolute top-10 right-10 opacity-20">
-          <Wrench className="w-32 h-32 text-white animate-spin" style={{animationDuration: '20s'}} />
-        </div>
-        <div className="absolute bottom-10 left-10 opacity-20">
-          <Hammer className="w-28 h-28 text-white" />
-        </div>
-        
-        <div className="relative container mx-auto px-4">
-          {heroSlides.map((slide, index) => (
-            <div
-              key={index}
-              className={`transition-opacity duration-700 ${
-                index === currentHeroSlide ? 'opacity-100' : 'opacity-0 absolute inset-0'
-              }`}
-            >
-              <div className="py-28 lg:py-36">
-                <div className="max-w-4xl mx-auto text-center">
-                  <div className="inline-block mb-6 px-6 py-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full">
-                    <p className="text-sm font-semibold text-white tracking-wide">🏆 Sri Lanka's #1 Hardware Store</p>
-                  </div>
-                  <h1 className="heading text-5xl lg:text-8xl font-black mb-6 animate-fade-in-up drop-shadow-2xl tracking-tight">
-                    {slide.title}
-                  </h1>
-                  <p className="heading text-2xl lg:text-4xl text-blue-50 mb-8 animate-fade-in-up drop-shadow-lg font-bold" style={{animationDelay: '0.1s'}}>
-                    {slide.subtitle}
-                  </p>
-                  <p className="text-xl lg:text-2xl text-blue-100 mb-12 max-w-3xl mx-auto animate-fade-in-up leading-relaxed" style={{animationDelay: '0.2s'}}>
-                    {slide.description}
-                  </p>
-                  <div className="flex flex-col sm:flex-row gap-4 justify-center items-center animate-fade-in-up" style={{animationDelay: '0.3s'}}>
-                    <Link
-                      to={slide.ctaLink}
-                      className="inline-flex items-center gap-3 bg-white text-blue-900 px-12 py-5 rounded-2xl font-bold text-xl hover:bg-blue-50 hover:shadow-2xl transition-all duration-300 shadow-2xl transform hover:scale-110 hover:-translate-y-1"
-                    >
-                      {slide.cta}
-                      <ArrowRight className="w-6 h-6" />
-                    </Link>
-                    <Link
-                      to="/contact"
-                      className="inline-flex items-center gap-3 bg-transparent border-2 border-white text-white px-12 py-5 rounded-2xl font-bold text-xl hover:bg-white hover:text-blue-900 transition-all duration-300 shadow-2xl transform hover:scale-110 hover:-translate-y-1"
-                    >
-                      Contact Us
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))}
-          
-          {/* Carousel Indicators */}
-          <div className="absolute bottom-12 left-1/2 transform -translate-x-1/2 flex gap-3">
-            {heroSlides.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => setCurrentHeroSlide(index)}
-                className={`h-3 rounded-full transition-all duration-300 ${
-                  index === currentHeroSlide ? 'bg-white w-12 shadow-lg' : 'bg-white/40 w-3 hover:bg-white/60'
-                }`}
-              />
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* Hardware Hero Section */}
+      <HardwareHero />
 
       {/* Stats Section */}
       <ScrollReveal>
-        <section className="py-20 bg-white border-b-2 border-gray-100 relative overflow-hidden">
-        {/* Background Decoration */}
-        <div className="absolute top-0 left-0 w-full h-1 bg-blue-600"></div>
+        <section className="py-16 bg-gradient-to-b from-gray-50 to-white relative overflow-hidden">
         
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-10">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
             {stats.map((stat, index) => (
               <div 
                 key={index} 
-                className="text-center group cursor-pointer transform hover:scale-110 transition-all duration-500 animate-fade-in-up bg-white rounded-3xl p-10 border-2 border-gray-100 hover:border-blue-500 hover:shadow-2xl relative overflow-hidden" 
+                className="group cursor-pointer transform hover:scale-105 transition-all duration-300 animate-fade-in-up bg-white rounded-2xl p-6 shadow-md hover:shadow-xl relative overflow-hidden" 
                 style={{animationDelay: `${index * 0.1}s`}}
               >
-                {/* Hover effect background */}
-                <div className="absolute inset-0 bg-blue-50 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                
-                <div className="relative z-10">
-                  <div className="inline-flex items-center justify-center w-24 h-24 bg-blue-600 rounded-3xl mb-6 group-hover:bg-blue-700 transition-all duration-500 shadow-xl group-hover:shadow-2xl transform group-hover:rotate-6">
-                    <stat.icon className="w-12 h-12 text-white transition-transform duration-500 group-hover:scale-110" />
+                <div className="relative z-10 text-center">
+                  <div className="inline-flex items-center justify-center w-14 h-14 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl mb-4 shadow-lg">
+                    <stat.icon className="w-7 h-7 text-white" />
                   </div>
-                  <div className="heading text-6xl font-black text-blue-600 mb-4 group-hover:text-blue-700 transition-colors duration-300">{stat.value}</div>
-                  <div className="text-lg font-bold text-gray-700 group-hover:text-gray-900 transition-colors duration-300 uppercase tracking-wide">{stat.label}</div>
+                  <div className="text-4xl font-bold text-gray-900 mb-1">{stat.value}</div>
+                  <div className="text-sm font-medium text-gray-600">{stat.label}</div>
                 </div>
               </div>
             ))}
@@ -415,10 +345,18 @@ const Homepage = () => {
                   return (
                     <div key={product.id} className="flex-shrink-0 w-80">
                       <ScrollReveal delay={index * 0.05}>
-                        <EnhancedProductCard
-                          product={product}
-                          discountInfo={discountInfo}
-                          onQuickView={setQuickViewProduct}
+                        <ProductCard
+                          name={product.name}
+                          description={product.description || "Quality hardware product for your needs"}
+                          image={product.imageUrl || product.image || "https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?w=800&h=800&fit=crop&auto=format&q=80"}
+                          price={`Rs. ${discountInfo.hasDiscount ? discountInfo.discountedPrice.toLocaleString() : product.price.toLocaleString()}`}
+                          originalPrice={discountInfo.hasDiscount ? `Rs. ${product.price.toLocaleString()}` : null}
+                          discount={discountInfo.hasDiscount ? Math.round(discountInfo.discountPercent) : null}
+                          rating={4.5}
+                          inStock={product.stockQuantity > 0}
+                          onAddToCart={() => handleAddToCart(product)}
+                          onQuickView={() => setQuickViewProduct(product)}
+                          isInCart={false}
                         />
                       </ScrollReveal>
                     </div>
@@ -446,40 +384,33 @@ const Homepage = () => {
       </section>
 
       {/* Categories */}
-      <section className="py-24 bg-gray-50 relative overflow-hidden">
-        {/* Background decoration */}
-        <div className="absolute top-10 left-10 w-72 h-72 bg-blue-100 rounded-full blur-3xl opacity-20 animate-pulse"></div>
-        <div className="absolute bottom-10 right-10 w-72 h-72 bg-purple-100 rounded-full blur-3xl opacity-20 animate-pulse" style={{animationDelay: '1s'}}></div>
-        
+      <section className="py-24 bg-gradient-to-b from-white to-gray-50 relative overflow-hidden">
         <div className="container mx-auto px-4 relative z-10">
-          <div className="text-center mb-16">
-            <div className="inline-block mb-4 px-4 py-1 bg-blue-600 text-white text-sm font-bold rounded-full">
-              📦 CATEGORIES
-            </div>
-            <h2 className="heading text-5xl font-black text-gray-900 mb-5">Shop by Category</h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Browse our extensive range of hardware products organized by category
+          <div className="text-center mb-12">
+            <h2 className="text-4xl font-bold text-gray-900 mb-3">Shop by Category</h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Browse our extensive range of hardware products
             </p>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
             {categories.map((category, index) => (
               <Link
                 key={category}
                 to={`/products?category=${encodeURIComponent(category)}`}
-                className="group p-10 bg-white rounded-3xl border-2 border-gray-200 hover:border-blue-500 hover:shadow-2xl transition-all duration-500 text-center animate-fade-in-up relative overflow-hidden transform hover:scale-105 hover:-translate-y-2"
-                style={{animationDelay: `${index * 0.05}s`}}
+                className="group relative h-48 bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden transform hover:scale-105 hover:-translate-y-1"
               >
-                {/* Hover background effect */}
-                <div className="absolute inset-0 bg-blue-50 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                {/* Category image placeholder with gradient */}
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-500 to-blue-700"></div>
                 
-                <div className="relative z-10">
-                  <div className="w-20 h-20 bg-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-5 group-hover:bg-blue-700 transition-all duration-500 shadow-xl group-hover:shadow-2xl transform group-hover:rotate-12">
-                    <Package className="w-10 h-10 text-white transition-transform duration-500 group-hover:scale-110" />
+                {/* Dark overlay for text readability */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
+                
+                {/* Content */}
+                <div className="absolute bottom-0 left-0 right-0 p-4 text-center">
+                  <div className="inline-flex items-center justify-center w-10 h-10 bg-white/20 backdrop-blur-sm rounded-xl mb-3 mx-auto border border-white/20">
+                    <Package className="w-5 h-5 text-white" />
                   </div>
-                  <h3 className="font-black text-lg text-gray-900 group-hover:text-blue-600 transition-colors duration-300 uppercase tracking-wide">{category}</h3>
-                  <div className="mt-3 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                    <ArrowRight className="w-5 h-5 text-blue-600 mx-auto" />
-                  </div>
+                  <h3 className="font-bold text-base text-white">{category}</h3>
                 </div>
               </Link>
             ))}
@@ -488,329 +419,70 @@ const Homepage = () => {
       </section>
 
       {/* Why Choose Us Section */}
-      <section className="py-24 bg-white relative overflow-hidden">
-        {/* Background decoration */}
-        <div className="absolute top-0 left-0 w-96 h-96 bg-purple-100 rounded-full blur-3xl opacity-30 animate-pulse"></div>
-        <div className="absolute bottom-0 right-0 w-96 h-96 bg-blue-100 rounded-full blur-3xl opacity-30 animate-pulse" style={{animationDelay: '1s'}}></div>
-        
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="text-center mb-16">
-            <div className="inline-block mb-4 px-4 py-1 bg-blue-600 text-white text-sm font-bold rounded-full">
-              ⭐ WHY CHOOSE US
-            </div>
-            <h2 className="heading text-5xl font-black text-gray-900 mb-5">Why Choose Athukorala Traders?</h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-              We've been serving Sri Lanka's construction and industrial sectors for over 25 years with dedication and excellence
-            </p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <div className="bg-white rounded-3xl p-12 border-2 border-gray-200 hover:border-blue-500 hover:shadow-2xl transition-all duration-500 group transform hover:scale-110 hover:-translate-y-3 animate-fade-in-up relative overflow-hidden" style={{animationDelay: '0s'}}>
-              {/* Hover background effect */}
-              <div className="absolute inset-0 bg-blue-50 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              
-              <div className="relative z-10">
-                <div className="w-24 h-24 bg-blue-600 rounded-3xl flex items-center justify-center mb-8 group-hover:bg-blue-700 transition-all duration-500 shadow-xl group-hover:shadow-2xl mx-auto transform group-hover:rotate-12 group-hover:scale-110">
-                  <Truck className="w-12 h-12 text-white transition-transform duration-500" />
-                </div>
-                <h3 className="heading text-2xl font-black text-gray-900 mb-5 group-hover:text-blue-600 transition-colors text-center">Fast Delivery</h3>
-                <p className="text-gray-600 leading-relaxed text-center text-base">
-                  Island-wide delivery with real-time tracking. Get your orders delivered quickly and safely to your doorstep.
-                </p>
-                <div className="mt-6 pt-6 border-t border-gray-200 group-hover:border-blue-300 transition-colors">
-                  <div className="flex items-center justify-center gap-2 text-sm font-bold text-blue-600">
-                    <CheckCircle className="w-5 h-5" />
-                    <span>Same Day Available</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="bg-white rounded-3xl p-12 border-2 border-gray-200 hover:border-blue-500 hover:shadow-2xl transition-all duration-500 group transform hover:scale-110 hover:-translate-y-3 animate-fade-in-up relative overflow-hidden" style={{animationDelay: '0.1s'}}>
-              {/* Hover background effect */}
-              <div className="absolute inset-0 bg-blue-50 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              
-              <div className="relative z-10">
-                <div className="w-24 h-24 bg-green-600 rounded-3xl flex items-center justify-center mb-8 group-hover:bg-green-700 transition-all duration-500 shadow-xl group-hover:shadow-2xl mx-auto transform group-hover:rotate-12 group-hover:scale-110">
-                  <Shield className="w-12 h-12 text-white transition-transform duration-500" />
-                </div>
-                <h3 className="heading text-2xl font-black text-gray-900 mb-5 group-hover:text-green-600 transition-colors text-center">Quality Guaranteed</h3>
-                <p className="text-gray-600 leading-relaxed text-center text-base">
-                  All products come with manufacturer warranties and our quality assurance guarantee for your peace of mind.
-                </p>
-                <div className="mt-6 pt-6 border-t border-gray-200 group-hover:border-green-300 transition-colors">
-                  <div className="flex items-center justify-center gap-2 text-sm font-bold text-green-600">
-                    <CheckCircle className="w-5 h-5" />
-                    <span>100% Authentic</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="bg-white rounded-3xl p-12 border-2 border-gray-200 hover:border-blue-500 hover:shadow-2xl transition-all duration-500 group transform hover:scale-110 hover:-translate-y-3 animate-fade-in-up relative overflow-hidden" style={{animationDelay: '0.2s'}}>
-              {/* Hover background effect */}
-              <div className="absolute inset-0 bg-blue-50 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              
-              <div className="relative z-10">
-                <div className="w-24 h-24 bg-orange-600 rounded-3xl flex items-center justify-center mb-8 group-hover:bg-orange-700 transition-all duration-500 shadow-xl group-hover:shadow-2xl mx-auto transform group-hover:rotate-12 group-hover:scale-110">
-                  <HeadphonesIcon className="w-12 h-12 text-white transition-transform duration-500" />
-                </div>
-                <h3 className="heading text-2xl font-black text-gray-900 mb-5 group-hover:text-orange-600 transition-colors text-center">Expert Support</h3>
-                <p className="text-gray-600 leading-relaxed text-center text-base">
-                  Our knowledgeable team is always ready to help you find the right products for your specific needs.
-                </p>
-                <div className="mt-6 pt-6 border-t border-gray-200 group-hover:border-orange-300 transition-colors">
-                  <div className="flex items-center justify-center gap-2 text-sm font-bold text-orange-600">
-                    <CheckCircle className="w-5 h-5" />
-                    <span>24/7 Available</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="bg-white rounded-3xl p-12 border-2 border-gray-200 hover:border-blue-500 hover:shadow-2xl transition-all duration-500 group transform hover:scale-110 hover:-translate-y-3 animate-fade-in-up relative overflow-hidden" style={{animationDelay: '0.3s'}}>
-              {/* Hover background effect */}
-              <div className="absolute inset-0 bg-blue-50 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              
-              <div className="relative z-10">
-                <div className="w-24 h-24 bg-purple-600 rounded-3xl flex items-center justify-center mb-8 group-hover:bg-purple-700 transition-all duration-500 shadow-xl group-hover:shadow-2xl mx-auto transform group-hover:rotate-12 group-hover:scale-110">
-                  <Award className="w-12 h-12 text-white transition-transform duration-500" />
-                </div>
-                <h3 className="heading text-2xl font-black text-gray-900 mb-5 group-hover:text-purple-600 transition-colors text-center">Trusted Brand</h3>
-                <p className="text-gray-600 leading-relaxed text-center text-base">
-                  25+ years of excellence serving thousands of satisfied customers across Sri Lanka with reliability.
-                </p>
-                <div className="mt-6 pt-6 border-t border-gray-200 group-hover:border-purple-300 transition-colors">
-                  <div className="flex items-center justify-center gap-2 text-sm font-bold text-purple-600">
-                    <CheckCircle className="w-5 h-5" />
-                    <span>Since 1995</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <WhyChooseUs />
 
       {/* Testimonials Section */}
-      <section className="py-24 bg-gray-50 relative overflow-hidden">
-        {/* Background decoration */}
-        <div className="absolute top-10 right-10 w-96 h-96 bg-yellow-100 rounded-full blur-3xl opacity-20 animate-pulse"></div>
-        <div className="absolute bottom-10 left-10 w-96 h-96 bg-blue-100 rounded-full blur-3xl opacity-20 animate-pulse" style={{animationDelay: '1s'}}></div>
-        
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="text-center mb-16">
-            <div className="inline-block mb-4 px-4 py-1 bg-yellow-500 text-white text-sm font-bold rounded-full">
-              💬 TESTIMONIALS
-            </div>
-            <h2 className="heading text-5xl font-black text-gray-900 mb-5">What Our Customers Say</h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-              Don't just take our word for it - hear from our satisfied customers
-            </p>
-          </div>
-          
-          {/* Testimonials Carousel */}
-          <div className="relative max-w-4xl mx-auto">
-            <div className="overflow-hidden">
-              {[
-                {
-                  name: 'Sunil Perera',
-                  role: 'Construction Manager',
-                  initials: 'SP',
-                  color: 'bg-blue-600',
-                  text: 'Excellent service and top-quality products! I\'ve been buying from Athukorala Traders for my construction projects for years. Never disappointed.'
-                },
-                {
-                  name: 'Nimal Fernando',
-                  role: 'Workshop Owner',
-                  initials: 'NF',
-                  color: 'bg-green-600',
-                  text: 'Fast delivery and great prices! The team is always helpful in recommending the right tools for my workshop. Highly recommended!'
-                },
-                {
-                  name: 'Ravi Jayasinghe',
-                  role: 'Factory Manager',
-                  initials: 'RJ',
-                  color: 'bg-purple-600',
-                  text: 'Professional service and authentic products. Their warranty support is excellent. Best hardware supplier in Sri Lanka!'
-                }
-              ].map((testimonial, index) => (
-                <div
-                  key={index}
-                  className={`transition-opacity duration-700 ${
-                    index === currentTestimonialSlide ? 'opacity-100' : 'opacity-0 absolute inset-0'
-                  }`}
-                >
-                  <div className="bg-white rounded-3xl p-16 border-2 border-gray-200 hover:border-yellow-400 hover:shadow-2xl transition-all duration-500 relative overflow-hidden">
-                    {/* Hover background effect */}
-                    <div className="absolute inset-0 bg-yellow-50 opacity-0 hover:opacity-100 transition-opacity duration-500"></div>
-                    
-                    <div className="relative z-10">
-                      {/* Star rating */}
-                      <div className="flex items-center justify-center gap-1 mb-8">
-                        {[...Array(5)].map((_, i) => (
-                          <Star key={i} className="w-8 h-8 fill-yellow-400 text-yellow-400" />
-                        ))}
-                      </div>
-                      
-                      {/* Quote icon */}
-                      <div className="text-center mb-8">
-                        <span className="text-8xl text-yellow-400 font-serif leading-none">"</span>
-                      </div>
-                      
-                      <p className="text-gray-700 text-2xl mb-12 leading-relaxed italic text-center max-w-3xl mx-auto">
-                        {testimonial.text}
-                      </p>
-                      
-                      {/* Author info */}
-                      <div className="flex flex-col items-center gap-5 pt-8 border-t-2 border-gray-200">
-                        <div className={`w-20 h-20 ${testimonial.color} rounded-full flex items-center justify-center text-white font-black text-2xl shadow-xl`}>
-                          {testimonial.initials}
-                        </div>
-                        <div className="text-center">
-                          <h4 className="font-black text-gray-900 text-2xl">{testimonial.name}</h4>
-                          <p className="text-base text-gray-600 font-medium mt-2">{testimonial.role}</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-            
-            {/* Carousel Indicators */}
-            <div className="flex justify-center gap-3 mt-10">
-              {[0, 1, 2].map((index) => (
-                <button
-                  key={index}
-                  onClick={() => setCurrentTestimonialSlide(index)}
-                  className={`h-3 rounded-full transition-all duration-300 ${
-                    index === currentTestimonialSlide ? 'bg-yellow-500 w-12 shadow-lg' : 'bg-gray-300 w-3 hover:bg-gray-400 hover:w-6'
-                  }`}
-                />
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
+      <Testimonials />
 
       {/* Our Services Section */}
+      <OurServices />
+
+      {/* Awards & Recognition Section */}
       <section className="py-24 bg-white relative overflow-hidden">
-        {/* Background decoration */}
-        <div className="absolute top-10 left-10 w-96 h-96 bg-green-100 rounded-full blur-3xl opacity-20 animate-pulse"></div>
-        <div className="absolute bottom-10 right-10 w-96 h-96 bg-blue-100 rounded-full blur-3xl opacity-20 animate-pulse" style={{animationDelay: '1s'}}></div>
+        <div className="absolute top-0 right-0 w-96 h-96 bg-yellow-50 rounded-full blur-3xl opacity-30 animate-pulse"></div>
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-amber-50 rounded-full blur-3xl opacity-30 animate-pulse" style={{animationDelay: '1s'}}></div>
         
         <div className="container mx-auto px-4 relative z-10">
           <div className="text-center mb-16">
-            <div className="inline-block mb-4 px-4 py-1 bg-green-600 text-white text-sm font-bold rounded-full">
-              🛠️ OUR SERVICES
+            <div className="inline-block mb-3 px-4 py-1 bg-gradient-to-r from-yellow-500 to-yellow-600 text-white text-sm font-bold rounded-full shadow-lg">
+              🏆 AWARDS & RECOGNITION
             </div>
-            <h2 className="heading text-5xl font-black text-gray-900 mb-5">Our Services</h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-              More than just a hardware store - we're your complete solution partner
-            </p>
+            <h2 className="heading text-5xl font-black text-gray-900 mb-4">Our Achievements</h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">Recognized for excellence and commitment to quality</p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <div className="bg-white rounded-3xl p-12 border-2 border-gray-200 hover:border-green-500 hover:shadow-2xl transition-all duration-500 group animate-fade-in-up transform hover:scale-105 hover:-translate-y-3 relative overflow-hidden" style={{animationDelay: '0s'}}>
-              {/* Hover background effect */}
-              <div className="absolute inset-0 bg-green-50 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              
-              <div className="relative z-10">
-                <div className="w-20 h-20 bg-green-600 rounded-3xl flex items-center justify-center mb-8 shadow-xl group-hover:shadow-2xl transition-all duration-500 group-hover:scale-110 group-hover:rotate-6">
-                  <Wrench className="w-10 h-10 text-white" />
-                </div>
-                <h3 className="heading text-2xl font-black text-gray-900 mb-5 group-hover:text-green-600 transition-colors">Technical Consultation</h3>
-                <p className="text-gray-600 text-base leading-relaxed mb-6">
-                  Free expert advice on product selection, usage, and maintenance. Our experienced team helps you make the right choices.
-                </p>
-                <ul className="space-y-4">
-                  <li className="flex items-start gap-3">
-                    <div className="flex-shrink-0 w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mt-0.5">
-                      <CheckCircle className="w-4 h-4 text-green-600" />
-                    </div>
-                    <span className="text-gray-700 font-semibold">Product recommendations</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <div className="flex-shrink-0 w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mt-0.5">
-                      <CheckCircle className="w-4 h-4 text-green-600" />
-                    </div>
-                    <span className="text-gray-700 font-semibold">Usage guidelines</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <div className="flex-shrink-0 w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mt-0.5">
-                      <CheckCircle className="w-4 h-4 text-green-600" />
-                    </div>
-                    <span className="text-gray-700 font-semibold">Maintenance tips</span>
-                  </li>
-                </ul>
-              </div>
-            </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <ScrollReveal delay={0.1}>
+              <Awards
+                variant="badge"
+                title="Best Quality"
+                subtitle="Hardware Excellence Award"
+                date="2024"
+                className="transform hover:scale-105 transition-transform duration-300"
+              />
+            </ScrollReveal>
             
-            <div className="bg-white rounded-3xl p-12 border-2 border-gray-200 hover:border-blue-500 hover:shadow-2xl transition-all duration-500 group animate-fade-in-up transform hover:scale-105 hover:-translate-y-3 relative overflow-hidden" style={{animationDelay: '0.1s'}}>
-              {/* Hover background effect */}
-              <div className="absolute inset-0 bg-blue-50 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              
-              <div className="relative z-10">
-                <div className="w-20 h-20 bg-blue-600 rounded-3xl flex items-center justify-center mb-8 shadow-xl group-hover:shadow-2xl transition-all duration-500 group-hover:scale-110 group-hover:rotate-6">
-                  <Package className="w-10 h-10 text-white" />
-                </div>
-                <h3 className="heading text-2xl font-black text-gray-900 mb-5 group-hover:text-blue-600 transition-colors">Bulk Orders</h3>
-                <p className="text-gray-600 text-base leading-relaxed mb-6">
-                  Special pricing and dedicated support for large-scale projects and commercial clients with flexible payment terms.
-                </p>
-                <ul className="space-y-4">
-                  <li className="flex items-start gap-3">
-                    <div className="flex-shrink-0 w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center mt-0.5">
-                      <CheckCircle className="w-4 h-4 text-blue-600" />
-                    </div>
-                    <span className="text-gray-700 font-semibold">Volume discounts</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <div className="flex-shrink-0 w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center mt-0.5">
-                      <CheckCircle className="w-4 h-4 text-blue-600" />
-                    </div>
-                    <span className="text-gray-700 font-semibold">Dedicated account manager</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <div className="flex-shrink-0 w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center mt-0.5">
-                      <CheckCircle className="w-4 h-4 text-blue-600" />
-                    </div>
-                    <span className="text-gray-700 font-semibold">Flexible payment options</span>
-                  </li>
-                </ul>
-              </div>
-            </div>
+            <ScrollReveal delay={0.2}>
+              <Awards
+                variant="badge"
+                title="Top Rated"
+                subtitle="Customer Choice Award"
+                recipient="5000+ Reviews"
+                date="2024"
+                className="transform hover:scale-105 transition-transform duration-300"
+              />
+            </ScrollReveal>
             
-            <div className="bg-white rounded-3xl p-12 border-2 border-gray-200 hover:border-orange-500 hover:shadow-2xl transition-all duration-500 group animate-fade-in-up transform hover:scale-105 hover:-translate-y-3 relative overflow-hidden" style={{animationDelay: '0.2s'}}>
-              {/* Hover background effect */}
-              <div className="absolute inset-0 bg-orange-50 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              
-              <div className="relative z-10">
-                <div className="w-20 h-20 bg-orange-600 rounded-3xl flex items-center justify-center mb-8 shadow-xl group-hover:shadow-2xl transition-all duration-500 group-hover:scale-110 group-hover:rotate-6">
-                  <Clock className="w-10 h-10 text-white" />
-                </div>
-                <h3 className="heading text-2xl font-black text-gray-900 mb-5 group-hover:text-orange-600 transition-colors">Express Delivery</h3>
-                <p className="text-gray-600 text-base leading-relaxed mb-6">
-                  Need it urgently? We offer same-day delivery for Colombo and express shipping island-wide with real-time tracking.
-                </p>
-                <ul className="space-y-4">
-                  <li className="flex items-start gap-3">
-                    <div className="flex-shrink-0 w-6 h-6 bg-orange-100 rounded-full flex items-center justify-center mt-0.5">
-                      <CheckCircle className="w-4 h-4 text-orange-600" />
-                    </div>
-                    <span className="text-gray-700 font-semibold">Same-day delivery (Colombo)</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <div className="flex-shrink-0 w-6 h-6 bg-orange-100 rounded-full flex items-center justify-center mt-0.5">
-                      <CheckCircle className="w-4 h-4 text-orange-600" />
-                    </div>
-                    <span className="text-gray-700 font-semibold">Real-time order tracking</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <div className="flex-shrink-0 w-6 h-6 bg-orange-100 rounded-full flex items-center justify-center mt-0.5">
-                      <CheckCircle className="w-4 h-4 text-orange-600" />
-                    </div>
-                    <span className="text-gray-700 font-semibold">Secure packaging</span>
-                  </li>
-                </ul>
-              </div>
-            </div>
+            <ScrollReveal delay={0.3}>
+              <Awards
+                variant="badge"
+                title="Industry Leader"
+                subtitle="25 Years of Excellence"
+                date="1999-2024"
+                className="transform hover:scale-105 transition-transform duration-300"
+              />
+            </ScrollReveal>
+            
+            <ScrollReveal delay={0.4}>
+              <Awards
+                variant="badge"
+                title="Trusted Partner"
+                subtitle="Authorized Dealer"
+                recipient="Leading Brands"
+                date="2024"
+                className="transform hover:scale-105 transition-transform duration-300"
+              />
+            </ScrollReveal>
           </div>
         </div>
       </section>
@@ -876,69 +548,7 @@ const Homepage = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-28 bg-white relative overflow-hidden">
-        {/* Background decoration */}
-        <div className="absolute inset-0">
-          <div className="absolute top-0 left-0 w-full h-2 bg-blue-600"></div>
-          <div className="absolute bottom-0 left-0 w-full h-2 bg-blue-600"></div>
-        </div>
-        <div className="absolute top-10 right-10 opacity-10">
-          <Zap className="w-64 h-64 text-blue-600" />
-        </div>
-        <div className="absolute top-20 left-20 w-96 h-96 bg-blue-100 rounded-full blur-3xl opacity-20 animate-pulse"></div>
-        <div className="absolute bottom-20 right-20 w-96 h-96 bg-purple-100 rounded-full blur-3xl opacity-20 animate-pulse" style={{animationDelay: '1s'}}></div>
-        
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="bg-blue-600 rounded-3xl p-16 lg:p-20 text-center text-white shadow-2xl border-8 border-blue-700 relative overflow-hidden">
-            {/* Decorative elements */}
-            <div className="absolute top-0 left-0 w-40 h-40 bg-white opacity-10 rounded-full blur-2xl animate-pulse"></div>
-            <div className="absolute bottom-0 right-0 w-40 h-40 bg-white opacity-10 rounded-full blur-2xl animate-pulse" style={{animationDelay: '1s'}}></div>
-            
-            <div className="relative z-10">
-              <div className="inline-flex items-center gap-2 mb-6 px-6 py-3 bg-white text-blue-600 rounded-full font-black text-sm shadow-xl">
-                <Zap className="w-5 h-5" />
-                SPECIAL OFFER
-              </div>
-              <h2 className="heading text-6xl font-black mb-8 drop-shadow-lg">Ready to Start Your Project?</h2>
-              <p className="text-2xl text-blue-50 mb-12 max-w-3xl mx-auto leading-relaxed font-medium">
-                Explore our full range of products and find everything you need for your next project with expert guidance
-              </p>
-              <div className="flex flex-col sm:flex-row gap-5 justify-center items-center">
-                <Link
-                  to="/products"
-                  className="inline-flex items-center gap-3 bg-white text-blue-600 px-14 py-6 rounded-2xl font-black text-xl hover:bg-blue-50 hover:shadow-2xl transition-all duration-300 shadow-2xl transform hover:scale-110 hover:-translate-y-1"
-                >
-                  Browse All Products
-                  <ArrowRight className="w-7 h-7" />
-                </Link>
-                <Link
-                  to="/contact"
-                  className="inline-flex items-center gap-3 bg-transparent border-4 border-white text-white px-14 py-6 rounded-2xl font-black text-xl hover:bg-white hover:text-blue-600 transition-all duration-300 shadow-2xl transform hover:scale-110 hover:-translate-y-1"
-                >
-                  Get Expert Help
-                  <HeadphonesIcon className="w-7 h-7" />
-                </Link>
-              </div>
-              
-              {/* Trust indicators */}
-              <div className="mt-12 flex flex-wrap justify-center gap-8 text-blue-100">
-                <div className="flex items-center gap-2">
-                  <CheckCircle className="w-6 h-6" />
-                  <span className="font-bold">Free Delivery</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle className="w-6 h-6" />
-                  <span className="font-bold">Quality Guaranteed</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle className="w-6 h-6" />
-                  <span className="font-bold">Expert Support</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <CTASection />
 
       {/* Recently Viewed Section */}
       {recentlyViewed.length > 0 && <RecentlyViewedSection />}
