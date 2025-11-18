@@ -4,7 +4,7 @@
 import fs from 'fs';
 import path from 'path';
 
-const CORRECT_BACKEND_URL = 'https://athukorala-traders-backend.onrender.com';
+const CORRECT_BACKEND_URL = 'https://athukorala-traders-backend-production.up.railway.app';
 const INCORRECT_PATTERNS = [
   'http://localhost:8080',
   'localhost:8080',

@@ -4,7 +4,7 @@
 
 ### **Deployment URLs:**
 - **Frontend:** `https://athukorala-traders-frontend.vercel.app/`
-- **Backend:** `https://athukorala-traders-backend.onrender.com`
+- **Backend:** `https://athukorala-traders-backend-production.up.railway.app`
 
 ### **Test Results:**
 | Endpoint | Status | Result |

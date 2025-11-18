@@ -13,11 +13,11 @@
    - Add the following variables:
 
    **Variable Name:** `VITE_API_BASE`  
-   **Value:** `https://athukorala-traders-backend.onrender.com`  
+   **Value:** `https://athukorala-traders-backend-production.up.railway.app`  
    **Environments:** Production, Preview, Development (check all)
 
    **Variable Name:** `VITE_API_BASE_URL`  
-   **Value:** `https://athukorala-traders-backend.onrender.com`  
+   **Value:** `https://athukorala-traders-backend-production.up.railway.app`  
    **Environments:** Production, Preview, Development (check all)
 
 3. **Redeploy**
@@ -41,9 +41,9 @@ This will show:
 Open browser dev tools and check console for:
 ```
 CustomerProductApi Configuration: {
-  VITE_API_BASE: "https://athukorala-traders-backend.onrender.com",
-  API_BASE: "https://athukorala-traders-backend.onrender.com",
-  PRODUCTS_PUBLIC: "https://athukorala-traders-backend.onrender.com/api/products",
+  VITE_API_BASE: "https://athukorala-traders-backend-production.up.railway.app",
+  API_BASE: "https://athukorala-traders-backend-production.up.railway.app",
+  PRODUCTS_PUBLIC: "https://athukorala-traders-backend-production.up.railway.app/api/products",
   mode: "production"
 }
 ```
@@ -51,7 +51,7 @@ CustomerProductApi Configuration: {
 ## Expected Behavior After Fix
 
 ✅ Products should load without "Failed to fetch" errors  
-✅ All API calls should use `https://athukorala-traders-backend.onrender.com`  
+✅ All API calls should use `https://athukorala-traders-backend-production.up.railway.app`  
 ✅ No localhost references in production  
 ✅ CORS issues resolved  
 
@@ -67,7 +67,7 @@ If environment variables still don't work, the code now includes:
 
 ```bash
 # Test API endpoint directly
-curl https://athukorala-traders-backend.onrender.com/api/products
+curl https://athukorala-traders-backend-production.up.railway.app/api/products
 
 # Should return HTTP 200 with product JSON array
 ```

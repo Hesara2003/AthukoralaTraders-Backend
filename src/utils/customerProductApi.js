@@ -1,6 +1,6 @@
 // Customer-facing Product API using public endpoints that include promotion info
 // Use environment variable with fallback to render backend
-const API_BASE = import.meta.env.VITE_API_BASE || 'https://athukorala-traders-backend.onrender.com';
+const API_BASE = import.meta.env.VITE_API_BASE || 'https://athukorala-traders-backend-production.up.railway.app';
 const PRODUCTS_PUBLIC = `${API_BASE}/api/products`;
 
 // Log the configuration for debugging
@@ -152,7 +152,7 @@ async function fetchWithRetry(url, options = {}, retries = 2) {
         // Try localhost fallback if in production
         if (url.includes('localhost') && import.meta.env.PROD) {
           console.log('Trying fallback URL for production...');
-          const fallbackUrl = url.replace(/localhost:8080/, 'athukorala-traders-backend.onrender.com');
+          const fallbackUrl = url.replace(/localhost:8080/, 'athukorala-traders-backend-production.up.railway.app');
           try {
             return await fetch(fallbackUrl, defaultOptions).then(handle);
           } catch (fallbackError) {

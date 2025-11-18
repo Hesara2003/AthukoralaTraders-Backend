@@ -1,7 +1,7 @@
 // Enhanced API configuration with fallback and error handling
 const API_CONFIG = {
-  // Primary backend (Render)
-  primary: 'https://athukorala-traders-backend.onrender.com',
+  // Primary backend (Railway)
+  primary: 'https://athukorala-traders-backend-production.up.railway.app',
   
   // Fallback options (if you have them)
   fallbacks: [

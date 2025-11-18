@@ -1,6 +1,6 @@
 // Backend Status and Endpoint Checker
 export class BackendChecker {
-  constructor(baseUrl = 'https://athukorala-traders-backend.onrender.com') {
+  constructor(baseUrl = 'https://athukorala-traders-backend-production.up.railway.app') {
     this.baseUrl = baseUrl;
     this.endpoints = [
       // Public endpoints that should work without auth
