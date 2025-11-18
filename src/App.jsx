@@ -33,6 +33,7 @@ import AboutPage from "./pages/AboutPage";
 import ContactPage from "./pages/ContactPage";
 import SearchDemo from "./pages/SearchDemo";
 import DeliveryTimelineDemo from "./pages/DeliveryTimelineDemo";
+import ApiTestPage from "./pages/ApiTestPage";
 import InvoiceDetails from "./pages/Finance/InvoiceDetails";
 import FinanceInvoiceList from "./pages/Finance/InvoiceList";
 import FinanceUpload from "./pages/Finance/UploadInvoice";
@@ -93,6 +94,7 @@ function App() {
             <Route path="/products/:id" element={<ProductDetail />} />
             <Route path="/search-demo" element={<SearchDemo />} />
             <Route path="/delivery-timeline-demo" element={<DeliveryTimelineDemo />} />
+            <Route path="/api-test" element={<ApiTestPage />} />
             
             {/* Order Tracking - Public */}
             <Route path="/track-order" element={<OrderTrackingPage />} />

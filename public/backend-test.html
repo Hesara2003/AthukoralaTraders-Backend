@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Backend API Test - Athukorala Traders</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .endpoint-test { padding: 10px; margin: 5px 0; border-radius: 5px; }
+        .success { background: #d4edda; color: #155724; }
+        .warning { background: #fff3cd; color: #856404; }
+        .error { background: #f8d7da; color: #721c24; }
+        .info { background: #d1ecf1; color: #0c5460; }
+        button { padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        button:disabled { background: #6c757d; cursor: not-allowed; }
+        .loading { color: #007bff; }
+        pre { background: #f8f9fa; padding: 10px; border-radius: 5px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Backend API Connectivity Test</h1>
+        <p>This page tests the backend API endpoints from the deployed frontend perspective.</p>
+        
+        <div id="config-info" class="info endpoint-test">
+            <strong>Configuration:</strong><br>
+            Frontend: https://athukorala-traders-frontend.vercel.app/<br>
+            Backend: https://athukorala-traders-backend.onrender.com<br>
+            Environment: Production
+        </div>
+
+        <button onclick="runTests()" id="testBtn">🧪 Run API Tests</button>
+        
+        <div id="results"></div>
+        
+        <div id="diagnosis" style="margin-top: 20px;"></div>
+    </div>
+
+    <script>
+        const BACKEND_URL = 'https://athukorala-traders-backend.onrender.com';
+        
+        const endpoints = [
+            { path: '/', name: 'Root Endpoint' },
+            { path: '/health', name: 'Health Check' },
+            { path: '/actuator/health', name: 'Actuator Health' },
+            { path: '/api', name: 'API Root' },
+            { path: '/api/health', name: 'API Health Check' },
+            { path: '/api/public/health', name: 'Public Health API' },
+            { path: '/api/auth/login', name: 'Login Endpoint' }
+        ];
+
+        async function testEndpoint(endpoint) {
+            const url = `${BACKEND_URL}${endpoint.path}`;
+            
+            try {
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                    mode: 'cors',
+                    credentials: 'omit'
+                });
+
+                return {
+                    ...endpoint,
+                    success: response.ok,
+                    status: response.status,
+                    statusText: response.statusText,
+                    accessible: response.status !== 403,
+                    url: url
+                };
+            } catch (error) {
+                return {
+                    ...endpoint,
+                    success: false,
+                    status: 0,
+                    statusText: 'Network Error',
+                    accessible: false,
+                    error: error.message,
+                    url: url
+                };
+            }
+        }
+
+        function getStatusClass(test) {
+            if (test.success) return 'success';
+            if (test.status === 403) return 'warning';
+            if (test.status === 404) return 'info';
+            return 'error';
+        }
+
+        function getStatusIcon(test) {
+            if (test.success) return '✅';
+            if (test.status === 403) return '🔒';
+            if (test.status === 404) return '❓';
+            return '❌';
+        }
+
+        async function runTests() {
+            const testBtn = document.getElementById('testBtn');
+            const resultsDiv = document.getElementById('results');
+            const diagnosisDiv = document.getElementById('diagnosis');
+            
+            testBtn.disabled = true;
+            testBtn.textContent = '🔄 Testing...';
+            resultsDiv.innerHTML = '<div class="loading">Running endpoint tests...</div>';
+            diagnosisDiv.innerHTML = '';
+
+            const results = [];
+            
+            for (const endpoint of endpoints) {
+                const result = await testEndpoint(endpoint);
+                results.push(result);
+                
+                // Update results in real-time
+                const html = results.map(r => `
+                    <div class="endpoint-test ${getStatusClass(r)}">
+                        ${getStatusIcon(r)} <strong>${r.name}</strong> (${r.path})<br>
+                        Status: ${r.status || 'No Response'} ${r.statusText || ''}<br>
+                        URL: <small>${r.url}</small>
+                        ${r.error ? `<br>Error: ${r.error}` : ''}
+                    </div>
+                `).join('');
+                
+                resultsDiv.innerHTML = html;
+            }
+
+            // Generate diagnosis
+            const totalTests = results.length;
+            const responding = results.filter(r => r.status !== 0).length;
+            const accessible = results.filter(r => r.accessible).length;
+            const forbidden = results.filter(r => r.status === 403).length;
+            const successful = results.filter(r => r.success).length;
+
+            let diagnosisClass = 'error';
+            let diagnosisText = '';
+            let recommendations = [];
+
+            if (forbidden === totalTests) {
+                diagnosisClass = 'warning';
+                diagnosisText = '🟡 Server Running - Security Blocking All Requests';
+                recommendations = [
+                    'Backend server is online and responding',
+                    'Spring Security is configured to block all endpoints',
+                    'Need to configure public endpoints in backend',
+                    'CORS appears to be working (requests reach server)'
+                ];
+            } else if (accessible > 0) {
+                diagnosisClass = 'success';
+                diagnosisText = '🟢 Backend Partially Accessible';
+                recommendations = [
+                    'Some endpoints are working correctly',
+                    'Review individual endpoint configurations'
+                ];
+            } else if (responding > 0) {
+                diagnosisClass = 'info';
+                diagnosisText = '🔵 Backend Responding with Errors';
+                recommendations = [
+                    'Server is reachable but returning errors',
+                    'Check server logs for detailed error information'
+                ];
+            } else {
+                diagnosisClass = 'error';
+                diagnosisText = '🔴 Backend Unreachable';
+                recommendations = [
+                    'Server may be down or network issues',
+                    'Check Render deployment status',
+                    'Verify backend URL is correct'
+                ];
+            }
+
+            const diagnosisHTML = `
+                <div class="${diagnosisClass} endpoint-test">
+                    <h3>📊 Diagnosis: ${diagnosisText}</h3>
+                    <p><strong>Statistics:</strong></p>
+                    <ul>
+                        <li>Total Endpoints Tested: ${totalTests}</li>
+                        <li>Responding: ${responding}</li>
+                        <li>Accessible: ${accessible}</li>
+                        <li>Successful: ${successful}</li>
+                        <li>Forbidden (403): ${forbidden}</li>
+                    </ul>
+                    <p><strong>Recommendations:</strong></p>
+                    <ul>
+                        ${recommendations.map(r => `<li>${r}</li>`).join('')}
+                    </ul>
+                </div>
+                
+                <div class="info endpoint-test">
+                    <h4>🛠️ Next Steps for Backend Fix:</h4>
+                    <pre>@Configuration
+@EnableWebSecurity
+public class SecurityConfig {
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http.authorizeHttpRequests(authz -> authz
+            .requestMatchers("/health", "/actuator/health").permitAll()
+            .requestMatchers("/api/public/**").permitAll()
+            .requestMatchers("/api/auth/login", "/api/auth/register").permitAll()
+            .anyRequest().authenticated()
+        );
+        return http.build();
+    }
+}</pre>
+                </div>
+            `;
+
+            diagnosisDiv.innerHTML = diagnosisHTML;
+            
+            testBtn.disabled = false;
+            testBtn.textContent = '🔄 Run Tests Again';
+        }
+
+        // Run tests automatically when page loads
+        window.onload = function() {
+            setTimeout(runTests, 1000);
+        };
+    </script>
+</body>
+</html>

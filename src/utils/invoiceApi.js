@@ -1,4 +1,5 @@
-const API_BASE_URL = 'http://localhost:8080/api/staff';
+const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:8080';
+const API_BASE_URL = `${API_BASE}/api/staff`;
 
 // Helper function to handle API responses
 const handleApiResponse = async (response) => {

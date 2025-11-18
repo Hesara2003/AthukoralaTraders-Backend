@@ -1,19 +1,29 @@
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
+// Use consistent environment variable naming
+const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:8080';
+const API_BASE_URL = `${API_BASE}/api`;
 
 class ReturnExchangeApi {
   constructor() {
     this.baseURL = API_BASE_URL;
+    console.log('ReturnExchangeApi initialized with baseURL:', this.baseURL);
   }
 
   // Get auth headers with JWT token
   getAuthHeaders() {
     const token = localStorage.getItem('token');
-    return {
-      'Authorization': `Bearer ${token}`,
+    const headers = {
       'Content-Type': 'application/json'
     };
+    
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    } else {
+      console.warn('No authentication token found');
+    }
+    
+    return headers;
   }
 
   // ==================== Admin/Staff Endpoints ====================
@@ -183,24 +193,34 @@ class ReturnExchangeApi {
    * Handle API errors consistently
    */
   handleError(error) {
+    console.error('API Error Details:', {
+      baseURL: this.baseURL,
+      error: error.message,
+      response: error.response?.data,
+      status: error.response?.status
+    });
+    
     if (error.response) {
       // Server responded with error status
       const { status, data } = error.response;
       
       if (status === 401) {
+        localStorage.removeItem('token'); // Clear invalid token
         return new Error('Authentication required. Please login again.');
       } else if (status === 403) {
         return new Error('Access denied. Insufficient permissions.');
       } else if (status === 404) {
-        return new Error(data.message || 'Resource not found.');
+        return new Error(data?.message || 'Resource not found.');
       } else if (status === 400) {
-        return new Error(data.message || 'Invalid request data.');
+        return new Error(data?.message || 'Invalid request data.');
+      } else if (status >= 500) {
+        return new Error('Server error. Please try again later.');
       } else {
-        return new Error(data.message || 'An error occurred.');
+        return new Error(data?.message || `HTTP ${status}: An error occurred.`);
       }
     } else if (error.request) {
-      // Request made but no response
-      return new Error('No response from server. Please check your connection.');
+      // Request made but no response - likely network or CORS issue
+      return new Error(`Network error: Unable to connect to ${this.baseURL}. Please check your connection or server status.`);
     } else {
       // Error in request setup
       return new Error(error.message || 'An unexpected error occurred.');
