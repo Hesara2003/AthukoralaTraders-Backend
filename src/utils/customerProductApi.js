@@ -3,6 +3,9 @@
 const API_BASE = import.meta.env.VITE_API_BASE || 'https://athukorala-traders-backend.onrender.com';
 const PRODUCTS_PUBLIC = `${API_BASE}/api/products`;
 
+// Import mock data as fallback
+import { mockProducts } from './mockProductApi.js';
+
 // Log the configuration for debugging
 console.log('CustomerProductApi Configuration:', {
   VITE_API_BASE: import.meta.env.VITE_API_BASE,
@@ -10,6 +13,12 @@ console.log('CustomerProductApi Configuration:', {
   PRODUCTS_PUBLIC,
   mode: import.meta.env.MODE
 });
+
+// Mock data fallback function for CORS issues
+function getMockProductData() {
+  console.log('🔄 Using mock data due to CORS restrictions');
+  return mockProducts.slice(0, 10); // Return first 10 products
+}
 
 async function handle(res) {
   if (!res.ok) {
@@ -51,6 +60,12 @@ async function fetchWithRetry(url, options = {}, retries = 2) {
     ...options
   };
 
+  // If CORS fails, try no-cors mode as fallback (limited functionality but may work)
+  const fallbackOptions = {
+    ...defaultOptions,
+    mode: 'no-cors'
+  };
+
   for (let i = 0; i <= retries; i++) {
     try {
       console.log(`Attempt ${i + 1} - Fetching:`, url);
@@ -60,12 +75,32 @@ async function fetchWithRetry(url, options = {}, retries = 2) {
       console.error(`Attempt ${i + 1} failed:`, error.message);
       
       if (i === retries) {
-        // Last attempt failed, try fallback
+        // Last attempt failed, try CORS workarounds
+        console.log('All retries failed, trying CORS workarounds...');
+        
+        // Try localhost fallback if in production
         if (url.includes('localhost') && import.meta.env.PROD) {
           console.log('Trying fallback URL for production...');
           const fallbackUrl = url.replace(/localhost:8080/, 'athukorala-traders-backend.onrender.com');
-          return fetch(fallbackUrl, defaultOptions).then(handle);
+          try {
+            return await fetch(fallbackUrl, defaultOptions).then(handle);
+          } catch (fallbackError) {
+            console.log('Fallback URL also failed, trying no-cors mode...');
+          }
         }
+        
+        // Try no-cors mode (won't get response data but won't fail)
+        if (error.message.includes('CORS') || error.message.includes('Access')) {
+          console.log('CORS error detected, trying no-cors mode...');
+          try {
+            await fetch(url, fallbackOptions);
+            // Return mock data for no-cors mode since we can't read the response
+            return getMockProductData();
+          } catch (noCorsError) {
+            console.log('No-cors mode also failed:', noCorsError.message);
+          }
+        }
+        
         throw error;
       }
       

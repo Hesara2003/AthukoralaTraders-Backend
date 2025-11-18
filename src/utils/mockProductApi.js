@@ -267,4 +267,7 @@ export const CustomerProductApi = {
     
     return results;
   }
-};
+}; 
+ / /   E x p o r t   m o c k P r o d u c t s   a r r a y   f o r   u s e   b y   o t h e r   m o d u l e s  
+ e x p o r t   {   m o c k P r o d u c t s   } ;  
+ 
